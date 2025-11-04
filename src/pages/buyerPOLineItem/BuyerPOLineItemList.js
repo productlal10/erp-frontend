@@ -43,8 +43,6 @@ const BuyerPOLineItemList = ({ onEdit }) => {
                 "Apply Taxes",
                 "GST Treatment",
                 "SKU Code",
-                "Remarks",
-                "Created At",
               ].map((header) => (
                 <th
                   key={header}
@@ -72,8 +70,6 @@ const BuyerPOLineItemList = ({ onEdit }) => {
                 <td className="px-4 py-2 text-sm text-gray-700 whitespace-nowrap">{item.apply_taxes}</td>
                 <td className="px-4 py-2 text-sm text-gray-700 whitespace-nowrap">{item.gst_treatment}</td>
                 <td className="px-4 py-2 text-sm text-gray-700 whitespace-nowrap">{item.sku_code}</td>
-                <td className="px-4 py-2 text-sm text-gray-700 whitespace-nowrap">{item.remarks}</td>
-                <td className="px-4 py-2 text-sm text-gray-700 whitespace-nowrap">{item.created_at}</td>
               </tr>
             ))}
           </tbody>

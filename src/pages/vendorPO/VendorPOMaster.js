@@ -77,7 +77,8 @@ const VendorPOMaster = ({ activeTab, setActiveTab }) => {
       
       {/* 2. Conditional Rendering for Form */}
       {currentTab === "VendorPOForm" && (
-        <VendorPOForm poToEdit={editingPO} onSaved={handleSaved} />
+        //<VendorPOForm poToEdit={editingPO} onSaved={handleSaved} />
+        <VendorPOForm vendorPO={editingPO} onVendorPOSaved={handleSaved} />
       )}
       
       {/* 3. Conditional Rendering for List */}

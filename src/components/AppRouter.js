@@ -109,6 +109,10 @@ import VendorPOMaster from '../pages/vendorPO/VendorPOMaster.js';
 
 // Standalone List Component
 import BuyerPOLineItemList from '../pages/buyerPOLineItem/BuyerPOLineItemList.js';
+//import VendorPOLineItemList from '../pages/vendorPOLineItem/VendorPOLineItemList.js';
+import VendorPOLineItemList from '../pages/vendorPOLineItem/VendorPOLineItemList.js';
+
+
 
 
 // 2. CLEAN UP PROPS: Only keep user, activeTab, and the setter setActiveTab
@@ -133,6 +137,7 @@ const AppRouter = ({
       {activeTab === 'RoleAccess' && <RoleAccess />}
       {activeTab === 'UserManagement' && <UserManagement />}
       {activeTab === 'BuyerPOLineItemList' && <BuyerPOLineItemList />}
+      {activeTab === 'VendorPOLineItemList' && <VendorPOLineItemList />}
 
 
       {/* ----------------- TAB-SWITCHING MASTER MODULES ----------------- 

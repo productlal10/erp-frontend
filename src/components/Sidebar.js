@@ -307,6 +307,13 @@ const Sidebar = ({
               </button>
              )
           }
+          if (module === 'Vendor PO Line Items') {
+            return (
+            <button key={module} onClick={() => setActiveTab('VendorPOLineItemList')} className={`block w-full text-left py-2 px-2 rounded hover:bg-gray-700 ${activeTab === 'VendorPOLineItemList' ? 'bg-gray-700 font-semibold text-blue-400' : ''}`}>
+              <span className="flex items-center"><span className="mr-2">📦</span> Vendor PO Line Items</span>
+            </button>
+             )
+          }
 
           // Render other simple links (e.g., UserManagement, RoleAccess)
           return <button key={module} onClick={() => setActiveTab(module)} className={`block w-full text-left py-2 px-2 rounded hover:bg-gray-700 ${activeTab === module ? 'bg-gray-700 font-semibold text-blue-400' : ''}`}>{module}</button>;
@@ -425,6 +432,15 @@ const Sidebar = ({
         >
           <span className="flex items-center"><span className="mr-2">📝</span> Buyer PO Line Items</span>
         </button>
+        <button
+          onClick={() => setActiveTab("VendorPOLineItemList")}
+          className={`block w-full text-left py-2 px-2 rounded hover:bg-gray-700 ${
+    activeTab === "VendorPOLineItemList" ? "bg-gray-700 font-semibold text-blue-400" : ""
+  }`}
+>
+  <span className="flex items-center"><span className="mr-2">📦</span> Vendor PO Line Items</span>
+</button>
+
 
         {/* TNA Module */}
         {user?.access?.['TNA Master']?.view && (
