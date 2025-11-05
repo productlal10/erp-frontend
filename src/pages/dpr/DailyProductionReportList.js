@@ -45,6 +45,7 @@ const DailyProductionReportList = ({ onEdit }) => {
             <th className="p-2 border">Vendor PO No</th>
             <th className="p-2 border">Buyer PO No</th>
             <th className="p-2 border">Vendor Name</th>
+            <th className="p-2 border">Buyer Name</th>
             <th className="p-2 border">Item Name</th>
             <th className="p-2 border">Style No</th>
             <th className="p-2 border">Qty</th>
@@ -61,6 +62,7 @@ const DailyProductionReportList = ({ onEdit }) => {
               <td className="p-2 border">{r.vendor_po_number ?? "-"}</td>
               <td className="p-2 border">{r.buyer_po_number ?? "-"}</td>
               <td className="p-2 border">{r.vendor_name ?? "-"}</td>
+              <td className="p-2 border">{r.buyer_name ?? "-"}</td>
               <td className="p-2 border">{r.item_name ?? "-"}</td>
               <td className="p-2 border">{r.style_number ?? "-"}</td>
               <td className="p-2 border">{r.quantity ?? 0}</td>

@@ -59,7 +59,7 @@ const VendorPOList = ({ onEdit }) => {
                 <td className="px-4 py-2 border">{po.purchase_order_date}</td>
                 <td className="px-4 py-2 border">{po.expected_delivery_date}</td>
                 <td className="px-4 py-2 border">{po.total_amount}</td>
-                <td className="px-4 py-2 border">{po.status || "-"}</td>
+                <td className="px-4 py-2 border">{po.status}</td>
                 <td className="px-4 py-2 border">
                   <button
                     className="px-2 py-1 mr-2 text-white bg-blue-500 rounded"

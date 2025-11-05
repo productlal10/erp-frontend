@@ -343,8 +343,8 @@ const SystemPOForm = ({ systemPO, onSystemPOSaved, onCancel }) => {
               >
                 <option value="">-Select Buyer-</option>
                 {customers.map((c) => (
-                  <option key={c.customer_id} value={c.display_name}>
-                    {c.display_name}
+                  <option key={c.customer_id} value={c.company_name}>
+                    {c.company_name}
                   </option>
                 ))}
               </select>
