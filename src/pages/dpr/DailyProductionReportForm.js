@@ -351,7 +351,7 @@ const DailyProductionReportForm = ({ report, onSaved, onCancel }) => {
     try {
       setLoading(true);
       setError("");
-      await axios.put(`${API_BASE}/dailyproductionreport/${report.dpr_id}`, formData);
+      await axios.put(`${API_BASE}/dpr/${report.dpr_id}`, formData);
       alert("DPR updated successfully!");
       if (onSaved) onSaved();
     } catch (err) {

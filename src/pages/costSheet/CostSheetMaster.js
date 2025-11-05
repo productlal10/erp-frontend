@@ -32,13 +32,13 @@ const CostSheetMaster = ({ activeTab, setActiveTab }) => {
     setRefreshTrigger(!refreshTrigger); // refresh list after delete
   };
 
-  const handleAddNew = () => {
-    setEditingCostSheet(null); // open empty form
-    setCurrentTab("CostSheetForm");
+  // const handleAddNew = () => {
+  //   setEditingCostSheet(null); // open empty form
+  //   setCurrentTab("CostSheetForm");
     
-    // Optional: If you want the sidebar to highlight 'CostSheetForm' when clicking the button:
-    // if (setActiveTab) setActiveTab("CostSheetForm");
-  };
+  //   // Optional: If you want the sidebar to highlight 'CostSheetForm' when clicking the button:
+  //   // if (setActiveTab) setActiveTab("CostSheetForm");
+  // };
 
   return (
     <div className="w-full max-w-6xl p-6">
@@ -51,14 +51,6 @@ const CostSheetMaster = ({ activeTab, setActiveTab }) => {
 
       {currentTab === "CostSheetList" && (
         <div>
-          <div className="mb-4">
-            <button
-              onClick={handleAddNew}
-              className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
-            >
-              Add New Cost Sheet
-            </button>
-          </div>
           <CostSheetList
             refreshList={refreshTrigger}
             onEdit={handleEdit}

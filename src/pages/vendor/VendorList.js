@@ -100,12 +100,12 @@ const VendorList = ({ refreshList, onEdit, onDelete }) => {
       <div className="max-w-full mx-auto overflow-x-auto bg-white rounded-lg shadow-md">
         <div className="flex items-center justify-between px-6 py-4 border-b">
           <h3 className="text-2xl font-semibold text-gray-800">Vendor List</h3>
-          <button
+          {/* <button
             onClick={() => handleEdit(null)}
             className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded hover:bg-blue-600"
           >
             + Add
-          </button>
+          </button> */}
         </div>
         {vendors.length === 0 ? (
           <p className="p-6 text-gray-500">No vendors found.</p>

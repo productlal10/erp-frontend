@@ -40,6 +40,7 @@ const DailyProductionReportList = ({ onEdit }) => {
       <table className="w-full border border-gray-300 table-auto">
         <thead className="bg-gray-100">
           <tr>
+            <th className="p-2 border">DPR ID</th>
             <th className="p-2 border">DPR Code</th>
             <th className="p-2 border">Vendor PO No</th>
             <th className="p-2 border">Buyer PO No</th>
@@ -55,6 +56,7 @@ const DailyProductionReportList = ({ onEdit }) => {
         <tbody>
           {reports.map((r) => (
             <tr key={r.dpr_id} className="text-center">
+              <td className="p-2 border">{r.dpr_id ?? "-"}</td>
               <td className="p-2 border">{r.dpr_code ?? "-"}</td>
               <td className="p-2 border">{r.vendor_po_number ?? "-"}</td>
               <td className="p-2 border">{r.buyer_po_number ?? "-"}</td>

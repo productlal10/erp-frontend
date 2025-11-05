@@ -111,12 +111,6 @@ const CustomerList = ({ refreshList, onEdit, onDelete }) => {
           >
             + Add
           </button> */}
-          <button
-    onClick={() => handleEdit(null)} // opens empty form
-    className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded hover:bg-blue-600"
-  >
-    + Add
-  </button>
 
         </div>
 
@@ -144,6 +138,8 @@ const CustomerList = ({ refreshList, onEdit, onDelete }) => {
                 <th className="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase">Account #</th>
                 <th className="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase">Bank Name</th>
                 <th className="px-4 py-3 text-xs font-medium text-center text-gray-500 uppercase">Actions</th>
+
+                
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">

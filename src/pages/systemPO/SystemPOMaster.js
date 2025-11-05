@@ -47,7 +47,6 @@ const SystemPOMaster = ({ activeTab: globalActiveTab, setActiveTab: setGlobalAct
   // Use localActiveTab for rendering
   return (
     <div className="p-4">
-      <h2 className="mb-4 text-xl font-bold">SystemPO Master</h2>
 
       {localActiveTab === "form" ? (
         <SystemPOForm
