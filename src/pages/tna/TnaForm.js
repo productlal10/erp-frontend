@@ -233,6 +233,73 @@ const emptyForm = {
   buyer_order_date: "",
   tna_overall_status: "",
   remarks: "",
+
+  status_greige_fabric_order: "",
+  expected_date_greige_fabric_order: "",
+  actual_date_greige_fabric_order: "",
+  last_modified_date_time_greige_fabric_order: "",
+  greige_fabric_quantity_ordered: "",
+  running_status_greige_fabric_order: "",
+
+  // ✅ Greige Fabric In-house Section
+  overall_status_greige_fabric_inhouse: "",
+  overall_expected_date_greige_fabric_inhouse: "",
+  overall_actual_date_greige_fabric_inhouse: "",
+  last_modified_date_time_greige_fabric_inhouse: "",
+  cumulative_quantity_greige_fabric_inhouse: "",
+  running_status_greige_fabric_inhouse: "",
+
+  // ✅ Fabric Processing Start Section
+  status_fabric_processing_start: "",
+  expected_date_fabric_processing_start: "",
+  actual_date_fabric_processing_start: "",
+  last_modified_date_time_fabric_processing_start: "",
+  vendor_po_no_fabric_processing_start: "",
+  fabric_name_fabric_processing_start: "",
+  processed_fabric_quantity: "",
+  running_status_fabric_processing_start: "",
+
+  // ✅ Strike-off / Lab-dip / Desk-loom Section
+  status_strikeoff_labdip_deskloom: "",
+  expected_date_strikeoff_labdip_deskloom: "",
+  actual_date_strikeoff_labdip_deskloom: "",
+  last_modified_date_time_strikeoff_labdip_deskloom: "",
+  running_status_strikeoff_labdip_deskloom: "",
+  
+  // ✅ Yardages In-house Section
+  status_yardages_inhouse: "",
+  expected_date_yardages_inhouse: "",
+  actual_date_yardages_inhouse: "",
+  last_modified_date_time_yardages_inhouse: "",
+  running_status_yardages_inhouse: "",
+
+  // ✅ Processed Fabric In-house Section
+  overall_status_processed_fabric_inhouse: "",
+  overall_expected_date_processed_fabric_inhouse: "",
+  overall_actual_date_processed_fabric_inhouse: "",
+  last_modified_date_time_processed_fabric_inhouse: "",
+  cumulative_quantity_processed_fabric_inhouse: "",
+  running_status_processed_fabric_inhouse: "",
+
+  // ✅ Processed Fabric QC Section
+  overall_status_processed_fabric_qc: "",
+  overall_expected_date_processed_fabric_qc: "",
+  overall_actual_date_processed_fabric_qc: "",
+  last_modified_date_time_processed_fabric_qc: "",
+  cumulative_quantity_processed_fabric_qc: "",
+  running_status_processed_fabric_qc: "",
+
+  // ✅ Trims Order Section
+  overall_status_trims_order: "",
+  overall_expected_date_trims_order: "",
+  overall_actual_date_trims_order: "",
+  last_modified_date_time_trims_order: "",
+  running_status_trims_order: "",
+
+
+
+
+
 };
 
 const TnaForm = ({ tnaToEdit, onTnaSaved }) => {
@@ -253,6 +320,100 @@ const TnaForm = ({ tnaToEdit, onTnaSaved }) => {
         buyer_order_date: tnaToEdit.buyer_order_date || "",
         tna_overall_status: tnaToEdit.tna_overall_status || "",
         remarks: tnaToEdit.remarks || "",
+        // ✅ Greige Fabric Order
+  status_greige_fabric_order: tnaToEdit.status_greige_fabric_order || "",
+  expected_date_greige_fabric_order: tnaToEdit.expected_date_greige_fabric_order || "",
+  actual_date_greige_fabric_order: tnaToEdit.actual_date_greige_fabric_order || "",
+  //last_modified_date_time_greige_fabric_order: tnaToEdit.last_modified_date_time_greige_fabric_order || "",
+  last_modified_date_time_greige_fabric_order: tnaToEdit.last_modified_date_time_greige_fabric_order 
+  ? tnaToEdit.last_modified_date_time_greige_fabric_order.replace(" ", "T").slice(0, 16)
+  : "",
+  greige_fabric_quantity_ordered: tnaToEdit.greige_fabric_quantity_ordered || "",
+  running_status_greige_fabric_order: tnaToEdit.running_status_greige_fabric_order || "",
+
+  // ✅ Greige Fabric In-house
+  overall_status_greige_fabric_inhouse: tnaToEdit.overall_status_greige_fabric_inhouse || "",
+  overall_expected_date_greige_fabric_inhouse: tnaToEdit.overall_expected_date_greige_fabric_inhouse || "",
+  overall_actual_date_greige_fabric_inhouse: tnaToEdit.overall_actual_date_greige_fabric_inhouse || "",
+  //last_modified_date_time_greige_fabric_inhouse: tnaToEdit.last_modified_date_time_greige_fabric_inhouse || "",
+  last_modified_date_time_greige_fabric_inhouse: tnaToEdit.last_modified_date_time_greige_fabric_inhouse 
+  ? tnaToEdit.last_modified_date_time_greige_fabric_inhouse.replace(" ", "T").slice(0, 16)
+  : "",
+  cumulative_quantity_greige_fabric_inhouse: tnaToEdit.cumulative_quantity_greige_fabric_inhouse || "",
+  running_status_greige_fabric_inhouse: tnaToEdit.running_status_greige_fabric_inhouse || "",
+
+  // ✅ Fabric Processing Start
+  status_fabric_processing_start: tnaToEdit.status_fabric_processing_start || "",
+  expected_date_fabric_processing_start: tnaToEdit.expected_date_fabric_processing_start || "",
+  actual_date_fabric_processing_start: tnaToEdit.actual_date_fabric_processing_start || "",
+  //last_modified_date_time_fabric_processing_start: tnaToEdit.last_modified_date_time_fabric_processing_start || "",
+  last_modified_date_time_fabric_processing_start: tnaToEdit.last_modified_date_time_fabric_processing_start 
+  ? tnaToEdit.last_modified_date_time_fabric_processing_start.replace(" ", "T").slice(0, 16)
+  : "",
+  vendor_po_no_fabric_processing_start: tnaToEdit.vendor_po_no_fabric_processing_start || "",
+  fabric_name_fabric_processing_start: tnaToEdit.fabric_name_fabric_processing_start || "",
+  processed_fabric_quantity: tnaToEdit.processed_fabric_quantity || "",
+  running_status_fabric_processing_start: tnaToEdit.running_status_fabric_processing_start || "",
+
+  // ✅ Strike-off / Lab-dip / Desk-loom
+  status_strikeoff_labdip_deskloom: tnaToEdit.status_strikeoff_labdip_deskloom || "",
+  expected_date_strikeoff_labdip_deskloom: tnaToEdit.expected_date_strikeoff_labdip_deskloom || "",
+  actual_date_strikeoff_labdip_deskloom: tnaToEdit.actual_date_strikeoff_labdip_deskloom || "",
+  //last_modified_date_time_strikeoff_labdip_deskloom: tnaToEdit.last_modified_date_time_strikeoff_labdip_deskloom || "",
+  
+  last_modified_date_time_strikeoff_labdip_deskloom: tnaToEdit.last_modified_date_time_strikeoff_labdip_deskloom
+  ? tnaToEdit.last_modified_date_time_strikeoff_labdip_deskloom.replace(" ", "T").slice(0, 16)
+  : "",
+
+  running_status_strikeoff_labdip_deskloom: tnaToEdit.running_status_strikeoff_labdip_deskloom || "",
+        
+  // ✅ Yardages In-house Section
+  status_yardages_inhouse: tnaToEdit.status_yardages_inhouse || "",
+  expected_date_yardages_inhouse: tnaToEdit.expected_date_yardages_inhouse || "",
+  actual_date_yardages_inhouse: tnaToEdit.actual_date_yardages_inhouse || "",
+  //last_modified_date_time_yardages_inhouse: tnaToEdit.last_modified_date_time_yardages_inhouse || "",
+  last_modified_date_time_yardages_inhouse: tnaToEdit.last_modified_date_time_yardages_inhouse
+  ? tnaToEdit.last_modified_date_time_yardages_inhouse.replace(" ", "T").slice(0, 16)
+  : "",
+
+
+
+  running_status_yardages_inhouse: tnaToEdit.running_status_yardages_inhouse || "",
+
+  // ✅ Processed Fabric In-house Section
+  overall_status_processed_fabric_inhouse: tnaToEdit.overall_status_processed_fabric_inhouse || "",
+  overall_expected_date_processed_fabric_inhouse: tnaToEdit.overall_expected_date_processed_fabric_inhouse || "",
+  overall_actual_date_processed_fabric_inhouse: tnaToEdit.overall_actual_date_processed_fabric_inhouse || "",
+  //last_modified_date_time_processed_fabric_inhouse: tnaToEdit.last_modified_date_time_processed_fabric_inhouse || "",
+  last_modified_date_time_processed_fabric_inhouse: tnaToEdit.last_modified_date_time_processed_fabric_inhouse
+  ? tnaToEdit.last_modified_date_time_processed_fabric_inhouse.replace(" ", "T").slice(0, 16)
+  : "",
+  cumulative_quantity_processed_fabric_inhouse: tnaToEdit.cumulative_quantity_processed_fabric_inhouse || "",
+  running_status_processed_fabric_inhouse: tnaToEdit.running_status_processed_fabric_inhouse || "",
+
+  // ✅ Processed Fabric QC Section
+  overall_status_processed_fabric_qc: tnaToEdit.overall_status_processed_fabric_qc || "",
+  overall_expected_date_processed_fabric_qc: tnaToEdit.overall_expected_date_processed_fabric_qc || "",
+  overall_actual_date_processed_fabric_qc: tnaToEdit.overall_actual_date_processed_fabric_qc || "",
+  //last_modified_date_time_processed_fabric_qc: tnaToEdit.last_modified_date_time_processed_fabric_qc || "",
+
+  last_modified_date_time_processed_fabric_qc: tnaToEdit.last_modified_date_time_processed_fabric_qc
+  ? tnaToEdit.last_modified_date_time_processed_fabric_qc.replace(" ", "T").slice(0, 16)
+  : "",
+
+  cumulative_quantity_processed_fabric_qc: tnaToEdit.cumulative_quantity_processed_fabric_qc || "",
+  running_status_processed_fabric_qc: tnaToEdit.running_status_processed_fabric_qc || "",
+
+  // ✅ Trims Order Section
+  overall_status_trims_order: tnaToEdit.overall_status_trims_order || "",
+  overall_expected_date_trims_order: tnaToEdit.overall_expected_date_trims_order || "",
+  overall_actual_date_trims_order: tnaToEdit.overall_actual_date_trims_order || "",
+  //last_modified_date_time_trims_order: tnaToEdit.last_modified_date_time_trims_order || "",
+  last_modified_date_time_trims_order: tnaToEdit.last_modified_date_time_trims_order
+  ? tnaToEdit.last_modified_date_time_trims_order.replace(" ", "T").slice(0, 16)
+  : "",
+  running_status_trims_order: tnaToEdit.running_status_trims_order || "",
+
       });
     } else {
       setFormData(emptyForm);
@@ -400,6 +561,279 @@ const TnaForm = ({ tnaToEdit, onTnaSaved }) => {
           className="w-64 px-2 py-2 text-sm border border-gray-400 rounded"
         />
       </div>
+      {/* ---------------------------------------------- */}
+{/* 1. Greige Fabric Order */}
+<h3 className="mt-8 mb-2 text-lg font-semibold">Greige Fabric Order Section</h3>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Status (Greige Fabric Order):</label>
+  <input type="text" name="status_greige_fabric_order" value={formData.status_greige_fabric_order} onChange={handleChange} className="w-64 px-2 py-2 border rounded" />
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Expected Date(Greige Fabric Order):</label>
+  <input type="date" name="expected_date_greige_fabric_order" value={formData.expected_date_greige_fabric_order} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Actual Date(Greige Fabric Order):</label>
+  <input type="date" name="actual_date_greige_fabric_order" value={formData.actual_date_greige_fabric_order} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Last Modified Date Time(Greige Fabric Order):</label>
+  <input type="datetime-local" name="last_modified_date_time_greige_fabric_order" value={formData.last_modified_date_time_greige_fabric_order} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Greige Fabric Quantity Ordered:</label>
+  <input type="number" name="greige_fabric_quantity_ordered" value={formData.greige_fabric_quantity_ordered} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Running Status(Greige Fabric Order):</label>
+  <input type="text" name="running_status_greige_fabric_order" value={formData.running_status_greige_fabric_order} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+
+{/* ---------------------------------------------- */}
+{/* 2. Greige Fabric In-House */}
+<h3 className="mt-8 mb-2 text-lg font-semibold">Greige Fabric In-house Section</h3>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Overall Status(Greige Fabric In-house):</label>
+  <input type="text" name="overall_status_greige_fabric_inhouse" value={formData.overall_status_greige_fabric_inhouse} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Overall Expected Date(Greige Fabric In-house):</label>
+  <input type="date" name="overall_expected_date_greige_fabric_inhouse" value={formData.overall_expected_date_greige_fabric_inhouse} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72"> Overall Actual Date(Greige Fabric In-house):</label>
+  <input type="date" name="overall_actual_date_greige_fabric_inhouse" value={formData.overall_actual_date_greige_fabric_inhouse} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Last Modified Date Time(Greige Fabric In-house):</label>
+  <input type="datetime-local" name="last_modified_date_time_greige_fabric_inhouse" value={formData.last_modified_date_time_greige_fabric_inhouse} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Cumulative Quantity(Greige Fabric In-house):</label>
+  <input type="number" name="cumulative_quantity_greige_fabric_inhouse" value={formData.cumulative_quantity_greige_fabric_inhouse} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Running Status(Greige Fabric In-house):</label>
+  <input type="text" name="running_status_greige_fabric_inhouse" value={formData.running_status_greige_fabric_inhouse} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+
+
+{/* ---------------------------------------------- */}
+{/* 3. Fabric Processing Start */}
+<h3 className="mt-8 mb-2 text-lg font-semibold">Fabric Processing Start Section</h3>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Status(Fabric Processing Start):</label>
+  <input type="text" name="status_fabric_processing_start" value={formData.status_fabric_processing_start} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Expected Date(Fabric Processing Start):</label>
+  <input type="date" name="expected_date_fabric_processing_start" value={formData.expected_date_fabric_processing_start} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Actual Date(Fabric Processing Start):</label>
+  <input type="date" name="actual_date_fabric_processing_start" value={formData.actual_date_fabric_processing_start} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Last Modified Date Time(Fabric Processing Start):</label>
+  <input type="datetime-local" name="last_modified_date_time_fabric_processing_start" value={formData.last_modified_date_time_fabric_processing_start} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Vendor PO No(Fabric Processing Start):</label>
+  <input type="text" name="vendor_po_no_fabric_processing_start" value={formData.vendor_po_no_fabric_processing_start} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Fabric Name(Fabric Processing Start):</label>
+  <input type="text" name="fabric_name_fabric_processing_start" value={formData.fabric_name_fabric_processing_start} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Processed Fabric Quantity:</label>
+  <input type="number" name="processed_fabric_quantity" value={formData.processed_fabric_quantity} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Running Status(Fabric Processing Start):</label>
+  <input type="text" name="running_status_fabric_processing_start" value={formData.running_status_fabric_processing_start} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+
+
+{/* ---------------------------------------------- */}
+{/* 4. Strike-off / Lab-dip / Desk-loom */}
+<h3 className="mt-8 mb-2 text-lg font-semibold">Strike-off / Lab-dip / Desk-loom Section</h3>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Status(Strike-off/Lab-dip/Desk-loom):</label>
+  <input type="text" name="status_strikeoff_labdip_deskloom" value={formData.status_strikeoff_labdip_deskloom} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Expected Date(Strike-off/Lab-dip/Desk-loom):</label>
+  <input type="date" name="expected_date_strikeoff_labdip_deskloom" value={formData.expected_date_strikeoff_labdip_deskloom} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Actual Date(Strike-off/Lab-dip/Desk-loom):</label>
+  <input type="date" name="actual_date_strikeoff_labdip_deskloom" value={formData.actual_date_strikeoff_labdip_deskloom} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Last Modified Date Time(Strike-off/Lab-dip/Desk-loom):</label>
+  <input type="datetime-local" name="last_modified_date_time_strikeoff_labdip_deskloom" value={formData.last_modified_date_time_strikeoff_labdip_deskloom} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Running Status(Strike-off/Lab-dip/Desk-loom):</label>
+  <input type="text" name="running_status_strikeoff_labdip_deskloom" value={formData.running_status_strikeoff_labdip_deskloom} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+{/* ---------------------------------------------- */}
+{/* 5. Yardages In-house */}
+<h3 className="mt-8 mb-2 text-lg font-semibold">Yardages In-house Section</h3>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Status(Yardages In-house):</label>
+  <input type="text" name="status_yardages_inhouse" value={formData.status_yardages_inhouse} onChange={handleChange} className="w-64 px-2 py-2 border rounded" />
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Expected Date(Yardages In-house):</label>
+  <input type="date" name="expected_date_yardages_inhouse" value={formData.expected_date_yardages_inhouse} onChange={handleChange} className="w-64 px-2 py-2 border rounded" />
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Actual Date(Yardages In-house):</label>
+  <input type="date" name="actual_date_yardages_inhouse" value={formData.actual_date_yardages_inhouse} onChange={handleChange} className="w-64 px-2 py-2 border rounded" />
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Last Modified Date Time(Yardages In-house):</label>
+  <input type="datetime-local" name="last_modified_date_time_yardages_inhouse" value={formData.last_modified_date_time_yardages_inhouse} onChange={handleChange} className="w-64 px-2 py-2 border rounded" />
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Running Status(Yardages In-house):</label>
+  <input type="text" name="running_status_yardages_inhouse" value={formData.running_status_yardages_inhouse} onChange={handleChange} className="w-64 px-2 py-2 border rounded" />
+</div>
+
+
+{/* ---------------------------------------------- */}
+{/* 6. Processed Fabric In-house */}
+<h3 className="mt-8 mb-2 text-lg font-semibold">Processed Fabric In-house Section</h3>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Overall Status(Processed Fabric In-house):</label>
+  <input type="text" name="overall_status_processed_fabric_inhouse" value={formData.overall_status_processed_fabric_inhouse} onChange={handleChange} className="w-64 px-2 py-2 border rounded" />
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Expected Date(Processed Fabric In-house):</label>
+  <input type="date" name="overall_expected_date_processed_fabric_inhouse" value={formData.overall_expected_date_processed_fabric_inhouse} onChange={handleChange} className="w-64 px-2 py-2 border rounded" />
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Actual Date(Processed Fabric In-house):</label>
+  <input type="date" name="overall_actual_date_processed_fabric_inhouse" value={formData.overall_actual_date_processed_fabric_inhouse} onChange={handleChange} className="w-64 px-2 py-2 border rounded" />
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Last Modified Date Time(Processed Fabric In-house):</label>
+  <input type="datetime-local" name="last_modified_date_time_processed_fabric_inhouse" value={formData.last_modified_date_time_processed_fabric_inhouse} onChange={handleChange} className="w-64 px-2 py-2 border rounded" />
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Cumulative Quantity(Processed Fabric In-house):</label>
+  <input type="number" name="cumulative_quantity_processed_fabric_inhouse" value={formData.cumulative_quantity_processed_fabric_inhouse} onChange={handleChange} className="w-64 px-2 py-2 border rounded" />
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Running Status(Processed Fabric In-house):</label>
+  <input type="text" name="running_status_processed_fabric_inhouse" value={formData.running_status_processed_fabric_inhouse} onChange={handleChange} className="w-64 px-2 py-2 border rounded" />
+</div>
+
+{/* ---------------------------------------------- */}
+{/* 7. Processed Fabric QC */}
+<h3 className="mt-8 mb-2 text-lg font-semibold">Processed Fabric QC Section</h3>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Overall Status(Processed Fabric QC):</label>
+  <input type="text" name="overall_status_processed_fabric_qc" value={formData.overall_status_processed_fabric_qc} onChange={handleChange} className="w-64 px-2 py-2 border rounded" />
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Expected Date(Processed Fabric QC):</label>
+  <input type="date" name="overall_expected_date_processed_fabric_qc" value={formData.overall_expected_date_processed_fabric_qc} onChange={handleChange} className="w-64 px-2 py-2 border rounded" />
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Actual Date(Processed Fabric QC):</label>
+  <input type="date" name="overall_actual_date_processed_fabric_qc" value={formData.overall_actual_date_processed_fabric_qc} onChange={handleChange} className="w-64 px-2 py-2 border rounded" />
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Last Modified Date Time(Processed Fabric QC):</label>
+  <input type="datetime-local" name="last_modified_date_time_processed_fabric_qc" value={formData.last_modified_date_time_processed_fabric_qc} onChange={handleChange} className="w-64 px-2 py-2 border rounded" />
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Cumulative Quantity(Processed Fabric QC):</label>
+  <input type="number" name="cumulative_quantity_processed_fabric_qc" value={formData.cumulative_quantity_processed_fabric_qc} onChange={handleChange} className="w-64 px-2 py-2 border rounded" />
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Running Status(Processed Fabric QC):</label>
+  <input type="text" name="running_status_processed_fabric_qc" value={formData.running_status_processed_fabric_qc} onChange={handleChange} className="w-64 px-2 py-2 border rounded" />
+</div>
+
+{/* ---------------------------------------------- */}
+{/* 8. Trims Order */}
+<h3 className="mt-8 mb-2 text-lg font-semibold">Trims Order Section</h3>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Overall Status(Trims Order):</label>
+  <input type="text" name="overall_status_trims_order" value={formData.overall_status_trims_order} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Expected Date(Trims Order):</label>
+  <input type="date" name="overall_expected_date_trims_order" value={formData.overall_expected_date_trims_order} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Actual Date(Trims Order):</label>
+  <input type="date" name="overall_actual_date_trims_order" value={formData.overall_actual_date_trims_order} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Last Modified Date Time(Trims Order):</label>
+  <input type="datetime-local" name="last_modified_date_time_trims_order" value={formData.last_modified_date_time_trims_order} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
+<div className="flex items-center mb-4">
+  <label className="text-sm font-medium w-72">Running Status(Trims Order):</label>
+  <input type="text" name="running_status_trims_order" value={formData.running_status_trims_order} onChange={handleChange} className="w-64 px-2 py-2 border rounded"/>
+</div>
+
 
       {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
 
