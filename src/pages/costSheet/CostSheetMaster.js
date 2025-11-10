@@ -43,9 +43,10 @@ const CostSheetMaster = ({ activeTab, setActiveTab }) => {
   return (
     <div className="w-full max-w-6xl p-6">
       {currentTab === "CostSheetForm" && (
+        
         <CostSheetForm
-          costsheet={editingCostSheet}
-          onCostSheetSaved={handleCostSheetSaved}
+        editingCostSheet={editingCostSheet}  // <- use correct prop name
+        onCostSheetSaved={handleCostSheetSaved}
         />
       )}
 

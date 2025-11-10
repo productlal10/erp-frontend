@@ -38,27 +38,30 @@ const SystemPOList = ({ refreshList, onEdit, onDelete }) => {
         shipping_cost: po.shipping_cost,
         billing_address: po.billing_address,
         shipping_address: po.shipping_address,
-        items: Array.isArray(po.items) && po.items.length > 0 ? po.items.map(item => ({
-          ...item,
-          cost_sheet_code: item.cost_sheet_code || "", // for dropdown display
-        })) : [
-          {
-            item_id: "",
-            item_name: "",
-            item_description: "",
-            style_number: "",
-            cost_sheet_id: "",
-            cost_sheet_code: "",
-            sku_code: "",
-            units_of_measure: "",
-            rate: "",
-            quantity: "",
-            apply_taxes: "",
-            gst_treatment: "",
-            amount: "",
-            remarks: "",
-          }
-        ],
+        
+items: Array.isArray(po.items) && po.items.length > 0 ? po.items.map(item => ({
+  ...item,
+  cost_sheet_code: item.cost_sheet_code || "",
+  sku_code: item.sku_code || "", // <-- use the correct field from API
+})) : [
+  {
+    item_id: "",
+    item_name: "",
+    item_description: "",
+    style_number: "",
+    cost_sheet_id: "",
+    cost_sheet_code: "",
+    sku_code: "",
+    units_of_measure: "",
+    rate: "",
+    quantity: "",
+    apply_taxes: "",
+    gst_treatment: "",
+    amount: "",
+    remarks: "",
+  }
+]
+        ,
       }));
 
       setSystemPOs(mappedPOs);

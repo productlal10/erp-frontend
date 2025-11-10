@@ -50,6 +50,8 @@ const SystemPOForm = ({ systemPO, onSystemPOSaved, onCancel }) => {
     shipping_address: "",
   });
 
+  const uomOptions = ["PCS", "KG", "MTR", "LITRE", "BOX"]; // add more if needed
+
   // Fetch customers
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -89,6 +91,28 @@ const SystemPOForm = ({ systemPO, onSystemPOSaved, onCancel }) => {
     fetchCostSheets();
   }, []);
 
+  // Fetch po_number
+  useEffect(() => {
+  const fetchNextPONumber = async () => {
+    try {
+      //const res = await fetch("/api/systempos/next-po-number");
+      const res = await fetch("http://localhost:4000/systempos/next-po-number"); 
+      const data = await res.json();
+      setFormData((prev) => ({
+        ...prev,
+        po_number: data.nextPOCode,
+      }));
+    } catch (error) {
+      console.error("Error fetching next PO number:", error);
+    }
+  };
+
+  fetchNextPONumber();
+}, []);
+
+
+
+
   // Populate form for editing
   useEffect(() => {
     if (systemPO) {
@@ -109,7 +133,7 @@ const SystemPOForm = ({ systemPO, onSystemPOSaved, onCancel }) => {
 
     if (name === "buyer_name") {
       const selectedCustomer = customers.find(
-        (c) => c.display_name === value
+        (c) => c.company_name === value
       );
 
       setFormData((prev) => ({
@@ -118,7 +142,9 @@ const SystemPOForm = ({ systemPO, onSystemPOSaved, onCancel }) => {
         customer_code: selectedCustomer ? selectedCustomer.customer_code : "",
         customer_id: selectedCustomer ? selectedCustomer.customer_id : null,
       }));
-    } else {
+    } 
+    
+    else {
       setFormData((prev) => ({
         ...prev,
         [name]: type === "file" ? files[0] : value,
@@ -126,35 +152,73 @@ const SystemPOForm = ({ systemPO, onSystemPOSaved, onCancel }) => {
     }
   };
 
+  // const handleItemChange = (index, e) => {
+  //   const { name, value } = e.target;
+  //   const updatedItems = [...formData.items];
+
+  //   if (name === "item_name") {
+  //     const selectedItem = itemsList.find((i) => i.item_name === value);
+  //     updatedItems[index].item_name = value;
+  //     updatedItems[index].style_number = selectedItem?.style_number || "";
+  //     updatedItems[index].item_id = selectedItem?.item_id || "";
+  //     updatedItems[index].item_sku = selectedItem?.item_sku || ""; 
+  //   } else if (name === "cost_sheet_id") {
+  //     const selectedCostSheet = costSheets.find(
+  //       (cs) => cs.cost_sheet_code === value
+  //     );
+  //     updatedItems[index].cost_sheet_id = selectedCostSheet
+  //       ? selectedCostSheet.cost_sheet_id
+  //       : "";
+  //     updatedItems[index].cost_sheet_code = value;
+  //   } else {
+  //     updatedItems[index][name] = value;
+  //   }
+
+  //   if (name === "rate" || name === "quantity") {
+  //     const rate = parseFloat(updatedItems[index].rate) || 0;
+  //     const qty = parseFloat(updatedItems[index].quantity) || 0;
+  //     updatedItems[index].amount = (rate * qty).toFixed(2);
+  //   }
+
+  //   setFormData({ ...formData, items: updatedItems });
+  // };
+
   const handleItemChange = (index, e) => {
-    const { name, value } = e.target;
-    const updatedItems = [...formData.items];
+  const { name, value } = e.target;
+  const updatedItems = [...formData.items];
 
-    if (name === "item_name") {
-      const selectedItem = itemsList.find((i) => i.item_name === value);
-      updatedItems[index].item_name = value;
-      updatedItems[index].style_number = selectedItem?.style_number || "";
-      updatedItems[index].item_id = selectedItem?.item_id || "";
-    } else if (name === "cost_sheet_id") {
-      const selectedCostSheet = costSheets.find(
-        (cs) => cs.cost_sheet_code === value
-      );
-      updatedItems[index].cost_sheet_id = selectedCostSheet
-        ? selectedCostSheet.cost_sheet_id
-        : "";
-      updatedItems[index].cost_sheet_code = value;
-    } else {
-      updatedItems[index][name] = value;
-    }
+  if (name === "item_name") {
+    const selectedItem = itemsList.find((i) => i.item_name === value);
+    updatedItems[index].item_name = value;
+    updatedItems[index].style_number = selectedItem?.style_number || "";
+    updatedItems[index].item_id = selectedItem?.item_id || "";
+    updatedItems[index].sku_code = selectedItem?.item_sku || ""; 
+  } else if (name === "cost_sheet_id") {
+    const selectedCostSheet = costSheets.find(
+      (cs) => cs.cost_sheet_code === value
+    );
+    updatedItems[index].cost_sheet_id = selectedCostSheet
+      ? selectedCostSheet.cost_sheet_id
+      : "";
+    updatedItems[index].cost_sheet_code = value;
+  } 
+  // ✅ Add this block for gst_treatment
+  else if (name === "gst_treatment") {
+    updatedItems[index][name] = parseInt(value) || 0; // convert to integer
+  } 
+  else {
+    updatedItems[index][name] = value;
+  }
 
-    if (name === "rate" || name === "quantity") {
-      const rate = parseFloat(updatedItems[index].rate) || 0;
-      const qty = parseFloat(updatedItems[index].quantity) || 0;
-      updatedItems[index].amount = (rate * qty).toFixed(2);
-    }
+  if (name === "rate" || name === "quantity") {
+    const rate = parseFloat(updatedItems[index].rate) || 0;
+    const qty = parseFloat(updatedItems[index].quantity) || 0;
+    updatedItems[index].amount = (rate * qty).toFixed(2);
+  }
 
-    setFormData({ ...formData, items: updatedItems });
-  };
+  setFormData({ ...formData, items: updatedItems });
+};
+
 
   const addItem = () => {
     setFormData((prev) => ({
@@ -300,7 +364,7 @@ const SystemPOForm = ({ systemPO, onSystemPOSaved, onCancel }) => {
                 className={inputClass}
               />
             </div>
-            <div>
+            {/* <div>
               <label className={labelClass}>Department</label>
               <input
                 type="text"
@@ -309,7 +373,28 @@ const SystemPOForm = ({ systemPO, onSystemPOSaved, onCancel }) => {
                 onChange={handleChange}
                 className={inputClass}
               />
-            </div>
+            </div> */}
+
+        <div>
+          <label className={labelClass}>Department</label>
+          <select
+          name="department"
+          value={formData.department}
+          onChange={handleChange}
+          className={inputClass}
+            >
+        <option value="">- Select Department -</option>
+        <option value="Apparels">Apparels</option>
+        <option value="Soft-Home">Soft-Home</option>
+        <option value="Furniture">Furniture</option>
+        <option value="Fabrics">Fabrics</option>
+        
+        </select>
+      </div>
+
+
+
+
             <div>
               <label className={labelClass}>Upload Buyer PO</label>
               <input
@@ -329,7 +414,7 @@ const SystemPOForm = ({ systemPO, onSystemPOSaved, onCancel }) => {
                 type="text"
                 name="po_number"
                 value={formData.po_number}
-                onChange={handleChange}
+                readOnly
                 className={inputClass}
               />
             </div>
@@ -395,19 +480,28 @@ const SystemPOForm = ({ systemPO, onSystemPOSaved, onCancel }) => {
             </div>
           </div>
 
-          {/* ================= Type of PO ================= */}
-          <div className={fieldContainerClass}>
-            <div>
-              <label className={labelClass}>Type of Buyer PO</label>
-              <input
-                type="text"
-                name="type_of_buyer_po"
-                value={formData.type_of_buyer_po}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
-          </div>
+ {/* ================= Type of PO ================= */}
+          
+  <div className={fieldContainerClass}>
+    <div>
+    <label className={labelClass}>Type of Buyer PO</label>
+    <select
+      name="type_of_buyer_po"
+      value={formData.type_of_buyer_po}
+      onChange={handleChange}
+      className={inputClass}
+    >
+      <option value="">- Select Type -</option>
+      <option value="Order">Order</option>
+      <option value="Sampling">Sampling</option>
+      <option value="Others">Others</option>
+      <option value="Replacement PO">Replacement PO</option>
+      <option value="FOB Order">FOB Order</option>
+    </select>
+    </div>
+  </div>
+
+
 
           <hr className="my-6 border-gray-200" />
 
@@ -428,7 +522,7 @@ const SystemPOForm = ({ systemPO, onSystemPOSaved, onCancel }) => {
                   <th className="px-2 py-2 border">Rate</th>
                   <th className="px-2 py-2 border">Quantity</th>
                   <th className="px-2 py-2 border">Apply Taxes</th>
-                  <th className="px-2 py-2 border">GST Treatment</th>
+                  <th className="px-2 py-2 border">Tax</th>
                   <th className="px-2 py-2 border">Amount</th>
                   <th className="px-2 py-2 border">Remarks</th>
                 </tr>
@@ -493,7 +587,7 @@ const SystemPOForm = ({ systemPO, onSystemPOSaved, onCancel }) => {
                         className={inputClass}
                       />
                     </td>
-                    <td className="px-2 py-1 border">
+                    {/* <td className="px-2 py-1 border">
                       <input
                         type="text"
                         name="units_of_measure"
@@ -501,7 +595,23 @@ const SystemPOForm = ({ systemPO, onSystemPOSaved, onCancel }) => {
                         onChange={(e) => handleItemChange(index, e)}
                         className={inputClass}
                       />
-                    </td>
+                    </td> */}
+                    <td className="px-2 py-1 border">
+                        <select
+                        name="units_of_measure"
+                        value={item.units_of_measure ?? ""}
+                        onChange={e => handleItemChange(index, e)}
+                        className={inputClass}
+                        >
+                        <option value="">-Select UOM-</option>
+                        {uomOptions.map((uom) => (
+                        <option key={uom} value={uom}>
+                        {uom}
+                        </option>
+                        ))}
+                        </select>
+                        </td>
+
                     <td className="px-2 py-1 border">
                       <input
                         type="number"
@@ -540,8 +650,13 @@ const SystemPOForm = ({ systemPO, onSystemPOSaved, onCancel }) => {
                         className={inputClass}
                       >
                         <option value="">-Select-</option>
-                        <option value="Regular">Regular</option>
-                        <option value="Composition">Composition</option>
+                        <option value={3}>3%</option>
+                        <option value={5}>5%</option>
+                        <option value={6}>6%</option>
+                        <option value={9}>9%</option>
+                        <option value={12}>12%</option>
+                        <option value={18}>18%</option>
+            
                       </select>
                     </td>
                     <td className="px-2 py-1 border">

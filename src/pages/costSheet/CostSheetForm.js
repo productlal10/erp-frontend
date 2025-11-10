@@ -109,6 +109,30 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
+  // STEP 3: Add the GP auto-calculation useEffect
+  useEffect(() => {
+    const cost = parseFloat(formData.cost_price) || 0;
+    const final = parseFloat(formData.final_price) || 0;
+
+    if (cost > 0 && final > 0) {
+      const totalGpValue = final - cost;
+      const gpValue = ((final - cost) / cost) * 100;
+
+      setFormData((prev) => ({
+        ...prev,
+        total_gp: totalGpValue.toFixed(2),
+        gp: gpValue.toFixed(2),
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        total_gp: "",
+        gp: "",
+      }));
+    }
+  }, [formData.cost_price, formData.final_price]); // runs whenever cost_price or final_price changes
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -301,7 +325,7 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
           step="0.01"
           name="gp"
           value={formData.gp}
-          onChange={handleChange}
+          readOnly
           className="w-64 px-2 py-2 text-sm border border-gray-400 rounded"
         />
       </div>
@@ -313,7 +337,7 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
           step="0.01"
           name="total_gp"
           value={formData.total_gp}
-          onChange={handleChange}
+          readOnly
           className="w-64 px-2 py-2 text-sm border border-gray-400 rounded"
         />
       </div>

@@ -45,6 +45,8 @@ const VendorPOForm = ({ vendorPO, onVendorPOSaved, onCancel }) => {
     terms_and_conditions: "",
   });
 
+  const uomOptions = ["PCS", "KG", "MTR", "LITRE", "BOX"]; // add more if needed
+
   useEffect(() => {
     const fetchVendors = async () => {
       try {
@@ -80,6 +82,27 @@ const VendorPOForm = ({ vendorPO, onVendorPOSaved, onCancel }) => {
     };
     fetchItems();
   }, []);
+
+  // fetch buyer po number
+  // Fetch vendor_po_no when the Vendor PO form loads
+useEffect(() => {
+  const fetchNextVPONumber = async () => {
+    try {
+      const res = await fetch("http://localhost:4000/vendorpos/next-vpo-number", {
+        credentials: "include"
+      });
+      const data = await res.json();
+      setFormData((prev) => ({
+        ...prev,
+        vendor_po_no: data.nextVPOCode,
+      }));
+    } catch (err) {
+      console.error("Error fetching next Vendor PO number:", err);
+    }
+  };
+
+  fetchNextVPONumber();
+}, []);
 
   // useEffect(() => {
   //   if (vendorPO) {
@@ -143,7 +166,7 @@ const VendorPOForm = ({ vendorPO, onVendorPOSaved, onCancel }) => {
         ...updatedItems[index],
         item_name: value,
         style_number: selectedItem?.style_number || "",
-        sku_code: selectedItem?.sku_code || "",
+        sku_code: selectedItem?.item_sku || "",
         item_id: selectedItem?.item_id || null,
       };
     } else {
@@ -209,11 +232,29 @@ const VendorPOForm = ({ vendorPO, onVendorPOSaved, onCancel }) => {
           {/* Vendor PO Info */}
           <h3 className="mb-4 text-lg font-semibold text-gray-700">Vendor PO Info</h3>
           <div className={fieldContainerClass}>
-            <div>
+            {/* <div>
               <label className={labelClass}>Order Type</label>
               <input type="text" name="order_type" value={formData.order_type ?? ""} onChange={handleChange} className={inputClass} />
-            </div>
+            </div> */}
             <div>
+  <label className={labelClass}>Order Type</label>
+  <select
+    name="order_type"
+    value={formData.order_type ?? ""}
+    onChange={handleChange}
+    className={inputClass}
+  >
+    <option value="">- Select Order Type -</option>
+    <option value="Garmenting">Garmenting</option>
+    <option value="Fabric Processing">Fabric Processing</option>
+    <option value="FOB">FOB</option>
+    <option value="Direct Purchase">Direct Purchase</option>
+    <option value="Fabrics Purchase">Fabrics Purchase</option>
+    <option value="Trims Purchase">Trims Purchase</option>
+  </select>
+</div>
+            <div>
+            
               <label className={labelClass}>Vendor Company</label>
               <select name="vendor_company_name" value={formData.vendor_company_name ?? ""} onChange={handleChange} className={inputClass}>
                 <option value="">-Select Company-</option>
@@ -307,9 +348,10 @@ const VendorPOForm = ({ vendorPO, onVendorPOSaved, onCancel }) => {
                     <td className="px-2 py-1 border">
                       <input type="text" name="sku_code" value={item.sku_code ?? ""} onChange={e => handleItemChange(idx, e)} className={inputClass} />
                     </td>
-                    <td className="px-2 py-1 border">
+                    {/* <td className="px-2 py-1 border">
                       <input type="text" name="units_of_measure" value={item.units_of_measure ?? ""} onChange={e => handleItemChange(idx, e)} className={inputClass} />
-                    </td>
+                    </td> */}
+                    <td className="px-2 py-1 border"> <select name="units_of_measure" value={item.units_of_measure ?? ""} onChange={e => handleItemChange(idx, e)} className={inputClass} > <option value="">-Select UOM-</option> {uomOptions.map((uom) => ( <option key={uom} value={uom}> {uom}</option>))} </select> </td>
                     <td className="px-2 py-1 border">
                       <input type="number" name="rate" value={item.rate ?? 0} onChange={e => handleItemChange(idx, e)} className={inputClass} />
                     </td>
