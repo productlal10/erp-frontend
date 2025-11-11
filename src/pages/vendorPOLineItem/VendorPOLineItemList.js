@@ -42,7 +42,8 @@ const VendorPOLineItemList = () => {
                 "Quantity",
                 "Rate",
                 "Amount",
-                "Apply Taxes"
+                "Apply Taxes",
+                "Taxes"
               ].map((header) => (
                 <th
                   key={header}
@@ -68,8 +69,8 @@ const VendorPOLineItemList = () => {
                 <td className="px-4 py-2 text-sm">{item.quantity}</td>
                 <td className="px-4 py-2 text-sm">{item.rate}</td>
                 <td className="px-4 py-2 text-sm">{item.amount}</td>
-                <td className="px-4 py-2 text-sm">{item.apply_taxes}</td>
                 <td className="px-4 py-2 text-sm">{item.apply_taxes ? "Yes" : "No"}</td>
+                <td className="px-4 py-2 text-sm">{item.gst_treatment}</td>
               </tr>
             ))}
           </tbody>

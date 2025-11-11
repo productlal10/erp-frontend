@@ -183,40 +183,122 @@ const SystemPOForm = ({ systemPO, onSystemPOSaved, onCancel }) => {
   //   setFormData({ ...formData, items: updatedItems });
   // };
 
-  const handleItemChange = (index, e) => {
+//   const handleItemChange = (index, e) => {
+//   const { name, value } = e.target;
+//   const updatedItems = [...formData.items];
+
+//   if (name === "item_name") {
+//     const selectedItem = itemsList.find((i) => i.item_name === value);
+//     updatedItems[index].item_name = value;
+//     updatedItems[index].style_number = selectedItem?.style_number || "";
+//     updatedItems[index].item_id = selectedItem?.item_id || "";
+//     updatedItems[index].sku_code = selectedItem?.item_sku || ""; 
+//   } else if (name === "cost_sheet_id") {
+//     const selectedCostSheet = costSheets.find(
+//       (cs) => cs.cost_sheet_code === value
+//     );
+//     updatedItems[index].cost_sheet_id = selectedCostSheet
+//       ? selectedCostSheet.cost_sheet_id
+//       : "";
+//     updatedItems[index].cost_sheet_code = value;
+//   } 
+//   // ✅ Add this block for gst_treatment
+//   else if (name === "gst_treatment") {
+//     updatedItems[index][name] = parseInt(value) || 0; // convert to integer
+//   } 
+//   else {
+//     updatedItems[index][name] = value;
+//   }
+
+//   if (["rate", "quantity", "gst_treatment"].includes(name)) {
+//   const rate = parseFloat(updatedItems[index].rate) || 0;
+//   const qty = parseFloat(updatedItems[index].quantity) || 0;
+//   const gst = parseFloat(updatedItems[index].gst_treatment) || 0;
+
+//   const baseAmount = rate * qty;
+//   const totalAmount = baseAmount + (baseAmount * gst / 100); // GST added
+//   updatedItems[index].amount = totalAmount.toFixed(2);
+// }
+
+//   setFormData({ ...formData, items: updatedItems });
+// };
+
+
+const handleItemChange = (index, e) => {
   const { name, value } = e.target;
   const updatedItems = [...formData.items];
 
+  // 🔹 Update field value
+  updatedItems[index][name] = value;
+
+  // 🔹 Auto-fill item-related fields
   if (name === "item_name") {
-    const selectedItem = itemsList.find((i) => i.item_name === value);
-    updatedItems[index].item_name = value;
-    updatedItems[index].style_number = selectedItem?.style_number || "";
-    updatedItems[index].item_id = selectedItem?.item_id || "";
-    updatedItems[index].sku_code = selectedItem?.item_sku || ""; 
-  } else if (name === "cost_sheet_id") {
+    const selectedItem = itemsList.find(i => i.item_name === value);
+    if (selectedItem) {
+      updatedItems[index].style_number = selectedItem.style_number || "";
+      updatedItems[index].item_id = selectedItem.item_id || "";
+      updatedItems[index].sku_code = selectedItem.item_sku || "";
+    }
+  }
+
+  // 🔹 Auto-fill cost sheet mapping
+  if (name === "cost_sheet_id") {
     const selectedCostSheet = costSheets.find(
-      (cs) => cs.cost_sheet_code === value
+      cs => cs.cost_sheet_code === value
     );
     updatedItems[index].cost_sheet_id = selectedCostSheet
       ? selectedCostSheet.cost_sheet_id
       : "";
     updatedItems[index].cost_sheet_code = value;
-  } 
-  // ✅ Add this block for gst_treatment
-  else if (name === "gst_treatment") {
-    updatedItems[index][name] = parseInt(value) || 0; // convert to integer
-  } 
-  else {
-    updatedItems[index][name] = value;
   }
 
-  if (name === "rate" || name === "quantity") {
+  // 🔹 Handle GST treatment conversion
+  if (name === "gst_treatment") {
+    updatedItems[index][name] = parseFloat(value) || 0;
+  }
+
+  // 🔹 Calculate per-line amount (with GST)
+  if (["rate", "quantity", "gst_treatment"].includes(name)) {
     const rate = parseFloat(updatedItems[index].rate) || 0;
     const qty = parseFloat(updatedItems[index].quantity) || 0;
-    updatedItems[index].amount = (rate * qty).toFixed(2);
+    const gst = parseFloat(updatedItems[index].gst_treatment) || 0;
+
+    const baseAmount = rate * qty;
+    const gstAmount = (baseAmount * gst) / 100;
+    const totalAmount = baseAmount + gstAmount;
+
+    updatedItems[index].base_amount = baseAmount.toFixed(2); // optional: show pure amount before GST
+    updatedItems[index].gst_value = gstAmount.toFixed(2); // optional: show GST value
+    updatedItems[index].amount = totalAmount.toFixed(2);
   }
 
-  setFormData({ ...formData, items: updatedItems });
+  // 🔹 Recalculate totals across all line items
+  const subTotal = updatedItems.reduce(
+    (sum, item) =>
+      sum + (parseFloat(item.rate) || 0) * (parseFloat(item.quantity) || 0),
+    0
+  );
+
+  const gstTotal = updatedItems.reduce(
+    (sum, item) =>
+      sum +
+      ((parseFloat(item.rate) || 0) *
+        (parseFloat(item.quantity) || 0) *
+        (parseFloat(item.gst_treatment) || 0)) /
+        100,
+    0
+  );
+
+  const totalAmount = subTotal + gstTotal;
+
+  // 🔹 Update formData with all calculated totals
+  setFormData({
+    ...formData,
+    items: updatedItems,
+    sub_total_amount: subTotal.toFixed(2),
+    gst_amount: gstTotal.toFixed(2),
+    total_amount: totalAmount.toFixed(2),
+  });
 };
 
 
@@ -650,12 +732,12 @@ const SystemPOForm = ({ systemPO, onSystemPOSaved, onCancel }) => {
                         className={inputClass}
                       >
                         <option value="">-Select-</option>
-                        <option value={3}>3%</option>
-                        <option value={5}>5%</option>
-                        <option value={6}>6%</option>
-                        <option value={9}>9%</option>
-                        <option value={12}>12%</option>
-                        <option value={18}>18%</option>
+                        <option value={3}>3</option>
+                        <option value={5}>5</option>
+                        <option value={6}>6</option>
+                        <option value={9}>9</option>
+                        <option value={12}>12</option>
+                        <option value={18}>18</option>
             
                       </select>
                     </td>
