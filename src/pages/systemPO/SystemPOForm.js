@@ -152,78 +152,6 @@ const SystemPOForm = ({ systemPO, onSystemPOSaved, onCancel }) => {
     }
   };
 
-  // const handleItemChange = (index, e) => {
-  //   const { name, value } = e.target;
-  //   const updatedItems = [...formData.items];
-
-  //   if (name === "item_name") {
-  //     const selectedItem = itemsList.find((i) => i.item_name === value);
-  //     updatedItems[index].item_name = value;
-  //     updatedItems[index].style_number = selectedItem?.style_number || "";
-  //     updatedItems[index].item_id = selectedItem?.item_id || "";
-  //     updatedItems[index].item_sku = selectedItem?.item_sku || ""; 
-  //   } else if (name === "cost_sheet_id") {
-  //     const selectedCostSheet = costSheets.find(
-  //       (cs) => cs.cost_sheet_code === value
-  //     );
-  //     updatedItems[index].cost_sheet_id = selectedCostSheet
-  //       ? selectedCostSheet.cost_sheet_id
-  //       : "";
-  //     updatedItems[index].cost_sheet_code = value;
-  //   } else {
-  //     updatedItems[index][name] = value;
-  //   }
-
-  //   if (name === "rate" || name === "quantity") {
-  //     const rate = parseFloat(updatedItems[index].rate) || 0;
-  //     const qty = parseFloat(updatedItems[index].quantity) || 0;
-  //     updatedItems[index].amount = (rate * qty).toFixed(2);
-  //   }
-
-  //   setFormData({ ...formData, items: updatedItems });
-  // };
-
-//   const handleItemChange = (index, e) => {
-//   const { name, value } = e.target;
-//   const updatedItems = [...formData.items];
-
-//   if (name === "item_name") {
-//     const selectedItem = itemsList.find((i) => i.item_name === value);
-//     updatedItems[index].item_name = value;
-//     updatedItems[index].style_number = selectedItem?.style_number || "";
-//     updatedItems[index].item_id = selectedItem?.item_id || "";
-//     updatedItems[index].sku_code = selectedItem?.item_sku || ""; 
-//   } else if (name === "cost_sheet_id") {
-//     const selectedCostSheet = costSheets.find(
-//       (cs) => cs.cost_sheet_code === value
-//     );
-//     updatedItems[index].cost_sheet_id = selectedCostSheet
-//       ? selectedCostSheet.cost_sheet_id
-//       : "";
-//     updatedItems[index].cost_sheet_code = value;
-//   } 
-//   // ✅ Add this block for gst_treatment
-//   else if (name === "gst_treatment") {
-//     updatedItems[index][name] = parseInt(value) || 0; // convert to integer
-//   } 
-//   else {
-//     updatedItems[index][name] = value;
-//   }
-
-//   if (["rate", "quantity", "gst_treatment"].includes(name)) {
-//   const rate = parseFloat(updatedItems[index].rate) || 0;
-//   const qty = parseFloat(updatedItems[index].quantity) || 0;
-//   const gst = parseFloat(updatedItems[index].gst_treatment) || 0;
-
-//   const baseAmount = rate * qty;
-//   const totalAmount = baseAmount + (baseAmount * gst / 100); // GST added
-//   updatedItems[index].amount = totalAmount.toFixed(2);
-// }
-
-//   setFormData({ ...formData, items: updatedItems });
-// };
-
-
 const handleItemChange = (index, e) => {
   const { name, value } = e.target;
   const updatedItems = [...formData.items];
@@ -240,6 +168,7 @@ const handleItemChange = (index, e) => {
       updatedItems[index].sku_code = selectedItem.item_sku || "";
     }
   }
+
 
   // 🔹 Auto-fill cost sheet mapping
   if (name === "cost_sheet_id") {
@@ -645,6 +574,8 @@ const handleItemChange = (index, e) => {
                         className={inputClass}
                       />
                     </td>
+
+
                     <td className="px-2 py-1 border">
                       <select
                         name="cost_sheet_id"
@@ -855,12 +786,6 @@ const handleItemChange = (index, e) => {
 
           {/* ================= Buttons ================= */}
           <div className="flex mt-6 space-x-4">
-            {/* <button
-              type="submit"
-              className="px-4 py-2 font-semibold text-white bg-blue-500 rounded hover:bg-blue-600"
-            >
-              Submit
-            </button> */}
             <button
   type="submit"
   className={`px-4 py-2 font-semibold text-white rounded ${

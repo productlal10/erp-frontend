@@ -93,7 +93,7 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
         category_name: selectedItem?.category_name || "",
       }));
     } else if (name === "buyer_name") {
-      const selectedCustomer = customers.find((c) => c.display_name === value);
+      const selectedCustomer = customers.find((c) => c.company_name === value);
       setFormData((prev) => ({
         ...prev,
         buyer_name: value,
@@ -245,8 +245,8 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
         >
           <option value="">Select Buyer</option>
           {customers.map((c) => (
-            <option key={c.customer_id} value={c.display_name}>
-              {c.display_name}
+            <option key={c.customer_id} value={c.company_name}>
+              {c.company_name}
             </option>
           ))}
         </select>

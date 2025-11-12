@@ -32,7 +32,7 @@ const EmployeeList = ({ refreshList, onEdit, onDelete,access }) => {
         username: emp.username,
         password: emp.password,
         reportingto: emp.reportingto,
-        access: emp.access || {},
+        //access: emp.access || {},
       }));
 
       setEmployees(normalized);
@@ -114,7 +114,7 @@ const EmployeeList = ({ refreshList, onEdit, onDelete,access }) => {
                 <th className="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase">Username</th>
                 <th className="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase">Password</th>
                 <th className="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase">ReportingTo</th>
-                <th className="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase">Access</th>
+                {/* <th className="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase">Access</th> */}
                 <th className="px-4 py-3 text-xs font-medium text-center text-gray-500 uppercase">Actions</th>
               </tr>
             </thead>
@@ -129,7 +129,7 @@ const EmployeeList = ({ refreshList, onEdit, onDelete,access }) => {
                   <td className="px-4 py-2 text-sm text-gray-700">{emp.username}</td>
                   <td className="px-4 py-2 text-sm text-gray-700">{emp.password}</td>
                   <td className="px-4 py-2 text-sm text-gray-700">{emp.reportingto}</td>
-                  <td className="px-4 py-2 text-sm text-gray-700">
+                  {/* <td className="px-4 py-2 text-sm text-gray-700">
                     {emp.access &&
                       Object.entries(emp.access).map(([moduleName, perms]) => {
                         const permList = Object.entries(perms || {})
@@ -142,7 +142,7 @@ const EmployeeList = ({ refreshList, onEdit, onDelete,access }) => {
                           </div>
                         );
                       })}
-                  </td>
+                  </td> */}
                   <td className="px-4 py-2 text-center">
                     <div className="flex justify-center space-x-2">
                       <button
