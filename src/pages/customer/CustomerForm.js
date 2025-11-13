@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import 'react-phone-input-2/lib/style.css';
+import PhoneInput from 'react-phone-input-2';
 
 // emptyForm moved outside to fix ESLint dependency warning
 const emptyForm = {
@@ -255,7 +257,7 @@ const CustomerForm = ({ customer, onCustomerSaved }) => {
         </div>
 
         {/* Primary Mobile */}
-        <div className="flex items-center">
+        {/* <div className="flex items-center">
           <label className="w-40 text-sm font-medium text-gray-700">Primary Mobile</label>
           <input
             type="tel"
@@ -264,7 +266,34 @@ const CustomerForm = ({ customer, onCustomerSaved }) => {
             onChange={handleChange}
             className="w-64 px-2 py-1 text-sm border border-gray-400 rounded"
           />
-        </div>
+        </div> */}
+        {/* Primary Contact Mobile No. */}
+<div className="flex items-center">
+  <label className="w-40 text-sm font-medium text-gray-700">Primary Contact Mobile No.</label>
+  <div className="w-64">
+    <PhoneInput
+      country={'in'} // default country (India)
+      value={formData.primaryMobile}
+      onChange={(phone) =>
+        setFormData((prev) => ({ ...prev, primaryMobile: phone }))
+      }
+      inputStyle={{
+        width: '100%',
+        fontSize: '14px',
+        border: '1px solid #9ca3af',
+        borderRadius: '4px',
+        height: '32px',
+      }}
+      buttonStyle={{
+        border: '1px solid #9ca3af',
+        borderRight: 'none',
+      }}
+      dropdownStyle={{
+        fontSize: '13px',
+      }}
+    />
+  </div>
+</div>
 
         {/* Type */}
         <div className="flex items-center">

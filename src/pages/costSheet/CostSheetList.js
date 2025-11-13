@@ -70,6 +70,7 @@ const CostSheetList = ({ refreshList, onEdit, onDelete }) => {
                 <th className="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase">Item ID</th>
                 <th className="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase">Customer ID</th>
                 <th className="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase">Style Number</th>
+                <th className="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase">Order Type</th>
                 <th className="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase">Buyer Name</th>
                 <th className="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase">Category</th>
                 <th className="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase">Currency</th>
@@ -89,6 +90,7 @@ const CostSheetList = ({ refreshList, onEdit, onDelete }) => {
                   <td className="px-4 py-2 text-sm text-gray-700">{sheet.item_id}</td>
                   <td className="px-4 py-2 text-sm text-gray-700">{sheet.customer_id}</td>
                   <td className="px-4 py-2 text-sm text-gray-700">{sheet.style_number}</td>
+                  <td className="px-4 py-2 text-sm text-gray-700">{sheet.order_type}</td>
                   <td className="px-4 py-2 text-sm text-gray-700">{sheet.buyer_name}</td>
                   <td className="px-4 py-2 text-sm text-gray-700">{sheet.category_name}</td>
                   <td className="px-4 py-2 text-sm text-gray-700">{sheet.currency_master}</td>

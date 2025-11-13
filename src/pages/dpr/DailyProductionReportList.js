@@ -1,4 +1,8 @@
 
+
+////
+
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -28,6 +32,16 @@ const DailyProductionReportList = ({ onEdit }) => {
       fetchReports();
     } catch (error) {
       console.error("Error deleting DPR:", error);
+    }
+  };
+
+  // ✅ Updated: fetch full DPR by ID when clicking Edit
+  const handleEditClick = async (dpr) => {
+    try {
+      const res = await axios.get(`${API_BASE}/dpr/${dpr.dpr_id}`);
+      onEdit(res.data); // pass full DPR with items to the form
+    } catch (err) {
+      console.error("Error fetching DPR details:", err);
     }
   };
 
@@ -69,7 +83,7 @@ const DailyProductionReportList = ({ onEdit }) => {
               <td className="p-2 border">{r.remarks ?? "-"}</td>
               <td className="p-2 space-x-2 border">
                 <button
-                  onClick={() => onEdit(r)}
+                  onClick={() => handleEditClick(r)} // ✅ updated
                   className="px-2 py-1 text-white bg-yellow-500 rounded hover:bg-yellow-600"
                 >
                   Edit
@@ -86,7 +100,7 @@ const DailyProductionReportList = ({ onEdit }) => {
 
           {reports.length === 0 && (
             <tr>
-              <td colSpan="9" className="p-4 text-center text-gray-500 border">
+              <td colSpan="11" className="p-4 text-center text-gray-500 border">
                 No DPR records found.
               </td>
             </tr>

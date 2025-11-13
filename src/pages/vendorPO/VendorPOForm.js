@@ -9,6 +9,7 @@ const VendorPOForm = ({ vendorPO, onVendorPOSaved, onCancel }) => {
   const [vendors, setVendors] = useState([]);
   const [systemPOs, setSystemPOs] = useState([]);
   const [itemsList, setItemsList] = useState([]);
+  const [employees, setEmployees] = useState([]);
   const [isUpdate, setIsUpdate] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -84,6 +85,22 @@ const VendorPOForm = ({ vendorPO, onVendorPOSaved, onCancel }) => {
     fetchItems();
   }, []);
 
+
+useEffect(() => {
+  const fetchEmployees = async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/employees`);
+      // Normalize to just name
+      const employeeData = Array.isArray(res.data) ? res.data : [];
+      setEmployees(employeeData.map(emp => ({ id: emp.employeeid, name: emp.name })));
+    } catch (err) {
+      console.error("Error fetching employees:", err);
+    }
+  };
+
+  fetchEmployees();
+}, []);
+
   // fetch buyer po number
   // Fetch vendor_po_no when the Vendor PO form loads
 useEffect(() => {
@@ -123,6 +140,7 @@ useEffect(() => {
     setIsUpdate(true);
   }
 }, [vendorPO]);
+
 
 
   const handleChange = (e) => {
@@ -350,10 +368,29 @@ useEffect(() => {
               <label className={labelClass}>Payment Terms</label>
               <input type="text" name="payment_terms" value={formData.payment_terms ?? ""} onChange={handleChange} className={inputClass} />
             </div>
-            <div>
+            {/* <div>
               <label className={labelClass}>Requested By</label>
               <input type="text" name="requested_by" value={formData.requested_by ?? ""} onChange={handleChange} className={inputClass} />
-            </div>
+            </div> */}
+
+            <div>
+  <label className={labelClass}>Requested By</label>
+  <select
+    name="requested_by"
+    value={formData.requested_by ?? ""}
+    onChange={handleChange}
+    className={inputClass}
+  >
+    <option value="">-Select Employee-</option>
+    {employees.map(emp => (
+      <option key={emp.id} value={emp.name}>
+        {emp.name}
+      </option>
+    ))}
+  </select>
+</div>
+
+
           </div>
 
           {/* Buyer PO Info */}

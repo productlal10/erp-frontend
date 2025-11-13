@@ -392,6 +392,10 @@ const emptyForm = {
   processing_details: [],
   stores_or_grinderies_details: [],
   labor_details: [],
+  total_cost_of_fabrics: "",
+  total_cost_of_process: "",
+  total_cost_of_stores: "",
+  total_cost_of_labor: "",
 };
 
 const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
@@ -494,6 +498,10 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
         processing_details: editingCostSheet.processing_details || [],
         stores_or_grinderies_details: editingCostSheet.stores_or_grinderies_details || [],
         labor_details: editingCostSheet.labor_details || [],
+        total_cost_of_fabrics: editingCostSheet.total_cost_of_fabrics || "",
+        total_cost_of_process: editingCostSheet.total_cost_of_process || "",
+        total_cost_of_stores: editingCostSheet.total_cost_of_stores || "",
+        total_cost_of_labor: editingCostSheet.total_cost_of_labor || "",
       });
       setFabricDetails(
         editingCostSheet.fabric_details || [
@@ -642,28 +650,139 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
     }
   }, [formData.cost_price, formData.final_price]);
 
+// ✅ Auto-calculate Total Cost of Fabrics whenever fabricDetails changes
+useEffect(() => {
+  const total = fabricDetails.reduce((sum, row) => {
+    return sum + (parseFloat(row.amount) || 0);
+  }, 0);
+
+  setFormData((prev) => ({
+    ...prev,
+    total_cost_of_fabrics: total.toFixed(2),
+  }));
+}, [fabricDetails]);
+
+// ✅ Auto-calculate Total Cost of Process whenever processingDetails changes
+useEffect(() => {
+  const total = processingDetails.reduce((sum, row) => {
+    return sum + (parseFloat(row.amount) || 0);
+  }, 0);
+
+  setFormData((prev) => ({
+    ...prev,
+    total_cost_of_process: total.toFixed(2),
+  }));
+}, [processingDetails]);
+
+
+// ✅ Auto-calculate Total Cost of Stores/Grinderies whenever storesOrGrinderiesDetails changes
+useEffect(() => {
+  const total = storesOrGrinderiesDetails.reduce((sum, row) => {
+    return sum + (parseFloat(row.amount) || 0);
+  }, 0);
+
+  setFormData((prev) => ({
+    ...prev,
+    total_cost_of_stores: total.toFixed(2),
+  }));
+}, [storesOrGrinderiesDetails]);
+
+
+// ✅ Auto-calculate Total Cost of Labor whenever laborDetails changes
+useEffect(() => {
+  const total = laborDetails.reduce((sum, row) => {
+    return sum + (parseFloat(row.amount) || 0);
+  }, 0);
+
+  setFormData((prev) => ({
+    ...prev,
+    total_cost_of_labor: total.toFixed(2),
+  }));
+}, [laborDetails]);
+
   // Fabric Handlers
+  // const handleFabricChange = (index, field, value) => {
+  //   const updated = [...fabricDetails];
+  //   updated[index][field] = value;
+  //   setFabricDetails(updated);
+  // };
+
   const handleFabricChange = (index, field, value) => {
-    const updated = [...fabricDetails];
-    updated[index][field] = value;
-    setFabricDetails(updated);
-  };
+  const updated = [...fabricDetails];
+  updated[index][field] = value;
+
+  // Auto-fill item_name when fabric_name (style_number) is selected
+  if (field === "fabric_name") {
+    const selectedItem = items.find(i => i.style_number === value);
+    if (selectedItem) {
+      updated[index].item_name = selectedItem.item_name || "";
+    } else {
+      updated[index].item_name = "";
+    }
+  }
+
+  // ✅ Auto-calculate amount = construction * rate
+  const construction = parseFloat(updated[index].construction) || 0;
+  const rate = parseFloat(updated[index].rate) || 0;
+  updated[index].amount = (construction * rate).toFixed(2);
+
+
+  setFabricDetails(updated);
+};
+
+
+
 
   const handleProcessingChange = (index, field, value) => {
   const updated = [...processingDetails];
   updated[index][field] = value;
+  
+  //Auto -fill item_name when process_name (style_number) is selected
+  if (field === "process_name") {
+    const selectedItem = items.find(i => i.style_number === value);
+    if (selectedItem) {
+      updated[index].item_name = selectedItem.item_name || "";
+    } else {
+      updated[index].item_name = "";
+    }
+  }
+
+  // ✅ Auto-calculate amount = construction * rate
+  const construction = parseFloat(updated[index].construction) || 0;
+  const rate = parseFloat(updated[index].rate) || 0;
+  updated[index].amount = (construction * rate).toFixed(2);
+
   setProcessingDetails(updated);
 };
 
   const handleStoresOrGrinderiesChange = (index, field, value) => {
   const updated = [...storesOrGrinderiesDetails];
   updated[index][field] = value;
+  // Auto-fill item_name when stores_or_grinderis_name (style_number) is selected
+  if (field === "stores_or_grinderis_name") {
+    const selectedItem = items.find(i => i.style_number === value);
+    if (selectedItem) {
+      updated[index].item_name = selectedItem.item_name || "";
+    } else {
+      updated[index].item_name = "";
+    }
+  }
+  // ✅ Auto-calculate amount = construction * rate
+  const construction = parseFloat(updated[index].construction) || 0;
+  const rate = parseFloat(updated[index].rate) || 0;
+  updated[index].amount = (construction * rate).toFixed(2);
   setStoresOrGrinderiesDetails(updated);
 }
 
   const handleLaborChange = (index, field, value) => {
     const updated = [...laborDetails];
     updated[index][field] = value;
+    
+    // ✅ Auto-calculate amount = construction * rate
+    const construction = parseFloat(updated[index].construction) || 0;
+    const rate = parseFloat(updated[index].rate) || 0;
+    updated[index].amount = (construction * rate).toFixed(2);
+
     setLaborDetails(updated);
   }
   
@@ -682,6 +801,12 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
     ]);
   };
 
+
+  const removeFabricRow = (index) => {
+  const updated = fabricDetails.filter((_, i) => i !== index);
+  setFabricDetails(updated);
+};
+
   const addProcessingRow = () => {
   setProcessingDetails([
     ...processingDetails,
@@ -695,6 +820,13 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
     },
   ]);
 };
+
+const removeProcessingRow = (index) => {
+  const updated = [...processingDetails];
+  updated.splice(index, 1);
+  setProcessingDetails(updated);
+};
+
 
   const addStoresOrGrinderiesRow = () => {
   setStoresOrGrinderiesDetails([
@@ -710,6 +842,12 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
   ]);
 };
 
+const removeStoresOrGrinderiesRow = (index) => {
+  const updated = [...storesOrGrinderiesDetails];
+  updated.splice(index, 1);
+  setStoresOrGrinderiesDetails(updated);
+};
+
   const addLaborRow = () => {
     setLaborDetails([
       ...laborDetails,
@@ -722,6 +860,14 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
       },
     ]);
   }
+
+  const removeLaborRow = (index) => {
+  const updated = [...laborDetails];
+  updated.splice(index, 1);
+  setLaborDetails(updated);
+};
+
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -1069,15 +1215,27 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
                   />
                 </td>
                 <td className="px-4 py-2">
-                  <input
-                    type="text"
-                    value={fabric.unit}
-                    onChange={(e) =>
-                      handleFabricChange(index, "unit", e.target.value)
-                    }
-                    className="w-full px-2 py-1 border rounded"
-                  />
-                </td>
+  <select
+    value={fabric.unit}
+    onChange={(e) => handleFabricChange(index, "unit", e.target.value)}
+    className="w-full px-2 py-1 border border-gray-400 rounded"
+  >
+    <option value="">Select Unit</option>
+    <option value="Box">Box</option>
+    <option value="Pcs">Pcs</option>
+    <option value="Cm">Cm</option>
+    <option value="Dz">Dz</option>
+    <option value="Ft">Ft</option>
+    <option value="G">G</option>
+    <option value="In">In</option>
+    <option value="Kg">Kg</option>
+    <option value="Km">Km</option>
+    <option value="Lb">Lb</option>
+    <option value="Mg">Mg</option>
+    <option value="Ml">Ml</option>
+    <option value="M">M</option>
+  </select>
+</td>
                 <td className="px-4 py-2">
                   <input
                     type="number"
@@ -1098,6 +1256,18 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
                     className="w-full px-2 py-1 border rounded"
                   />
                 </td>
+   {/* Adding remove row button */}
+      {/* ✅ Remove Row Button */}
+    <td className="px-2 py-1 text-center">
+  <button
+    type="button"
+    onClick={() => removeFabricRow(index)}
+    className="text-sm font-semibold text-red-500 hover:text-red-700"
+    title="Remove Row"
+  >
+    ❌
+  </button>
+</td>
               </tr>
             ))}
           </tbody>
@@ -1111,6 +1281,16 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
       >
         + Add New
       </button>
+
+      <div className="mt-3 text-right">
+  <label className="mr-2 font-semibold">Total Cost of Fabrics:</label>
+  <input
+    type="text"
+    value={formData.total_cost_of_fabrics}
+    readOnly
+    className="w-40 px-2 py-1 text-right bg-gray-100 border rounded"
+  />
+</div>
 
       <h3 className="mt-8 mb-4 text-xl font-semibold text-gray-800">
   Processing Details
@@ -1169,15 +1349,27 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
             />
           </td>
           <td className="px-4 py-2">
-            <input
-              type="text"
-              value={process.unit}
-              onChange={(e) =>
-                handleProcessingChange(index, "unit", e.target.value)
-              }
-              className="w-full px-2 py-1 border rounded"
-            />
-          </td>
+  <select
+    value={process.unit}
+    onChange={(e) => handleProcessingChange(index, "unit", e.target.value)}
+    className="w-full px-2 py-1 border border-gray-400 rounded"
+  >
+    <option value="">Select Unit</option>
+    <option value="Box">Box</option>
+    <option value="Pcs">Pcs</option>
+    <option value="Cm">Cm</option>
+    <option value="Dz">Dz</option>
+    <option value="Ft">Ft</option>
+    <option value="G">G</option>
+    <option value="In">In</option>
+    <option value="Kg">Kg</option>
+    <option value="Km">Km</option>
+    <option value="Lb">Lb</option>
+    <option value="Mg">Mg</option>
+    <option value="Ml">Ml</option>
+    <option value="M">M</option>
+  </select>
+</td>
           <td className="px-4 py-2">
             <input
               type="number"
@@ -1200,6 +1392,17 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
               className="w-full px-2 py-1 border rounded"
             />
           </td>
+
+          <td className="px-2 py-1 text-center">
+  <button
+    type="button"
+    onClick={() => removeProcessingRow(index)}
+    className="text-sm text-red-500 hover:text-red-700"
+    title="Remove Row"
+  >
+    ❌
+  </button>
+</td>
         </tr>
       ))}
     </tbody>
@@ -1213,6 +1416,16 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
 >
   + Add New
 </button>
+
+<div className="mt-3 text-right">
+  <label className="mr-2 font-semibold">Total Cost of Process:</label>
+  <input
+    type="text"
+    value={formData.total_cost_of_process}
+    readOnly
+    className="w-40 px-2 py-1 text-right bg-gray-100 border rounded"
+  />
+</div>
 
 <h3 className="mt-8 mb-4 text-xl font-semibold text-gray-800">
   Stores / Grinderies Details
@@ -1271,15 +1484,29 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
             />
           </td>
           <td className="px-4 py-2">
-            <input
-              type="text"
-              value={store.unit}
-              onChange={(e) =>
-                handleStoresOrGrinderiesChange(index, "unit", e.target.value)
-              }
-              className="w-full px-2 py-1 border rounded"
-            />
-          </td>
+  <select
+    value={store.unit}
+    onChange={(e) =>
+      handleStoresOrGrinderiesChange(index, "unit", e.target.value)
+    }
+    className="w-full px-2 py-1 border border-gray-400 rounded"
+  >
+    <option value="">Select Unit</option>
+    <option value="Box">Box</option>
+    <option value="Pcs">Pcs</option>
+    <option value="Cm">Cm</option>
+    <option value="Dz">Dz</option>
+    <option value="Ft">Ft</option>
+    <option value="G">G</option>
+    <option value="In">In</option>
+    <option value="Kg">Kg</option>
+    <option value="Km">Km</option>
+    <option value="Lb">Lb</option>
+    <option value="Mg">Mg</option>
+    <option value="Ml">Ml</option>
+    <option value="M">M</option>
+  </select>
+</td>
           <td className="px-4 py-2">
             <input
               type="number"
@@ -1302,6 +1529,17 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
               className="w-full px-2 py-1 border rounded"
             />
           </td>
+
+          <td className="px-2 py-1 text-center">
+  <button
+    type="button"
+    onClick={() => removeStoresOrGrinderiesRow(index)}
+    className="text-sm text-red-500 hover:text-red-700"
+    title="Remove Row"
+  >
+    ❌
+  </button>
+</td>
         </tr>
       ))}
     </tbody>
@@ -1315,6 +1553,16 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
 >
   + Add New
 </button>
+
+<div className="mt-3 text-right">
+  <label className="mr-2 font-semibold">Total Cost of Stores/Grinderies:</label>
+  <input
+    type="text"
+    value={formData.total_cost_of_stores}
+    readOnly
+    className="w-40 px-2 py-1 text-right bg-gray-100 border rounded"
+  />
+</div>
 
 <h3 className="mt-8 mb-4 text-xl font-semibold text-gray-800">
   Labor Details
@@ -1340,12 +1588,13 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
     onChange={(e) => handleLaborChange(index, "labor", e.target.value)}
     className="w-full px-2 py-1 border border-gray-400 rounded"
   >
-    <option value="">Select Style Number</option>
-    {items.map((i) => (
-      <option key={i.item_id} value={i.style_number}>
-        {i.style_number}
-      </option>
-    ))}
+    <option value="">Select Labor Type</option>
+    <option value="CMT">CMT</option>
+    <option value="Cutting">Cutting</option>
+    <option value="Stitching">Stitching</option>
+    <option value="Finishing">Finishing</option>
+    <option value="Other Cost">Other Cost</option>
+    <option value="Packing">Packing</option>
   </select>
 </td>
           <td className="px-4 py-2">
@@ -1358,13 +1607,27 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
             />
           </td>
           <td className="px-4 py-2">
-            <input
-              type="text"
-              value={labor.unit}
-              onChange={(e) => handleLaborChange(index, "unit", e.target.value)}
-              className="w-full px-2 py-1 border rounded"
-            />
-          </td>
+  <select
+    value={labor.unit}
+    onChange={(e) => handleLaborChange(index, "unit", e.target.value)}
+    className="w-full px-2 py-1 border border-gray-400 rounded"
+  >
+    <option value="">Select Unit</option>
+    <option value="Box">Box</option>
+    <option value="Pcs">Pcs</option>
+    <option value="Cm">Cm</option>
+    <option value="Dz">Dz</option>
+    <option value="Ft">Ft</option>
+    <option value="G">G</option>
+    <option value="In">In</option>
+    <option value="Kg">Kg</option>
+    <option value="Km">Km</option>
+    <option value="Lb">Lb</option>
+    <option value="Mg">Mg</option>
+    <option value="Ml">Ml</option>
+    <option value="M">M</option>
+  </select>
+</td>
           <td className="px-4 py-2">
             <input
               type="number"
@@ -1383,6 +1646,16 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
               className="w-full px-2 py-1 border rounded"
             />
           </td>
+          <td className="px-2 py-1 text-center">
+      <button
+        type="button"
+        onClick={() => removeLaborRow(index)}
+        className="text-sm text-red-500 hover:text-red-700"
+        title="Remove Row"
+      >
+        ❌
+      </button>
+    </td>
         </tr>
       ))}
     </tbody>
@@ -1396,6 +1669,15 @@ const CostSheetForm = ({ editingCostSheet, onCostSheetSaved }) => {
 >
   + Add Labor
 </button>
+<div className="mt-3 text-right">
+  <label className="mr-2 font-semibold">Total Cost of Labor:</label>
+  <input
+    type="text"
+    value={formData.total_cost_of_labor}
+    readOnly
+    className="w-40 px-2 py-1 text-right bg-gray-100 border rounded"
+  />
+</div>
 </>
 )}
 
