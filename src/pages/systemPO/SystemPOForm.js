@@ -91,25 +91,25 @@ const SystemPOForm = ({ systemPO, onSystemPOSaved, onCancel }) => {
     fetchCostSheets();
   }, []);
 
-  // Fetch po_number
-  useEffect(() => {
-  const fetchNextPONumber = async () => {
-    try {
-      //const res = await fetch("/api/systempos/next-po-number");
-      const res = await fetch("http://localhost:4000/systempos/next-po-number"); 
-      const data = await res.json();
-      setFormData((prev) => ({
-        ...prev,
-        po_number: data.nextPOCode,
-      }));
-    } catch (error) {
-      console.error("Error fetching next PO number:", error);
-    }
-  };
+// Fetch next PO number only if creating NEW record
+useEffect(() => {
+  if (!systemPO) { // only when there is no systemPO to edit
+    const fetchNextPONumber = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/systempos/next-po-number`);
+        const data = await res.json();
+        setFormData(prev => ({
+          ...prev,
+          po_number: data.nextPOCode,
+        }));
+      } catch (error) {
+        console.error("Error fetching next PO number:", error);
+      }
+    };
 
-  fetchNextPONumber();
-}, []);
-
+    fetchNextPONumber();
+  }
+}, [systemPO]);
 
 
 
@@ -119,10 +119,18 @@ const SystemPOForm = ({ systemPO, onSystemPOSaved, onCancel }) => {
       setFormData(prev => ({
         ...prev,
         ...systemPO,
+        // items:
+        //   systemPO.items && systemPO.items.length > 0
+        //     ? systemPO.items
+        //     : prev.items,
+
         items:
-          systemPO.items && systemPO.items.length > 0
-            ? systemPO.items
-            : prev.items,
+  systemPO.items && systemPO.items.length > 0
+    ? systemPO.items.map(i => ({
+        ...i,
+        tna_created: i.tna_created ?? false,   // ✅ Important
+      }))
+    : prev.items,
       }));
       setIsUpdate(true);
     }
@@ -251,6 +259,7 @@ const handleItemChange = (index, e) => {
           gst_treatment: "",
           amount: "",
           remarks: "",
+          tna_created: false,   // ✅ REQUIRED HERE ALSO
         },
       ],
     }));
@@ -333,6 +342,7 @@ const handleItemChange = (index, e) => {
           gst_treatment: "",
           amount: "",
           remarks: "",
+          tna_created: false   // ✅ THIS IS REQUIRED
         },
       ],
       discount_amount: "",
@@ -425,7 +435,7 @@ const handleItemChange = (index, e) => {
                 type="text"
                 name="po_number"
                 value={formData.po_number}
-                readOnly
+                readOnly={true}
                 className={inputClass}
               />
             </div>
@@ -536,6 +546,7 @@ const handleItemChange = (index, e) => {
                   <th className="px-2 py-2 border">Tax</th>
                   <th className="px-2 py-2 border">Amount</th>
                   <th className="px-2 py-2 border">Remarks</th>
+                  <th className="px-2 py-2 border">TNA Created</th>
                 </tr>
               </thead>
               <tbody>
@@ -690,6 +701,21 @@ const handleItemChange = (index, e) => {
                         className={inputClass}
                       />
                     </td>
+                    <td>
+<input
+  type="checkbox"
+  //checked={item.tna_created}
+  checked={!!item.tna_created} 
+  onChange={(e) => {
+    const updatedItems = [...formData.items];
+    updatedItems[index].tna_created = e.target.checked;
+    setFormData(prev => ({ ...prev, items: updatedItems }));
+  }}
+  className="w-5 h-5 text-blue-600 border-gray-400 rounded cursor-pointer focus:ring-blue-500"
+/>
+
+</td>
+                                      
                   </tr>
                 ))}
               </tbody>

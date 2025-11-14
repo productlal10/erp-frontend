@@ -101,9 +101,7 @@ useEffect(() => {
   fetchEmployees();
 }, []);
 
-  // fetch buyer po number
-  // Fetch vendor_po_no when the Vendor PO form loads
-useEffect(() => {
+  useEffect(() => {
   const fetchNextVPONumber = async () => {
     try {
       const res = await fetch("http://localhost:4000/vendorpos/next-vpo-number", {
@@ -119,9 +117,11 @@ useEffect(() => {
     }
   };
 
-  fetchNextVPONumber();
-}, []);
-
+  // Only fetch next VPO if this is a new PO
+  if (!vendorPO) {
+    fetchNextVPONumber();
+  }
+}, [vendorPO]);
   // useEffect(() => {
   //   if (vendorPO) {
   //     setFormData({ ...vendorPO });
