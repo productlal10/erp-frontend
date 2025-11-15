@@ -49,6 +49,14 @@ const VendorPOForm = ({ vendorPO, onVendorPOSaved, onCancel }) => {
 
   const uomOptions = ["PCS", "KG", "MTR", "LITRE", "BOX"]; // add more if needed
 
+  // this is for the payment terms dropdown
+const [paymentTermsList, setPaymentTermsList] = useState([]);
+const [newPaymentTermInput, setNewPaymentTermInput] = useState("");
+const [paymentTermModalOpen, setPaymentTermModalOpen] = useState(false);
+const [paymentTermLoading, setPaymentTermLoading] = useState(false);
+
+
+
   useEffect(() => {
     const fetchVendors = async () => {
       try {
@@ -140,6 +148,24 @@ useEffect(() => {
     setIsUpdate(true);
   }
 }, [vendorPO]);
+
+// this is for the payment terms dropdown
+useEffect(() => {
+  const fetchPaymentTerms = async () => {
+    setPaymentTermLoading(true); // ✅ mark as loading
+    try {
+      const res = await axios.get(`${API_BASE}/payment-terms`);
+      setPaymentTermsList(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      console.error("Error fetching Payment Terms:", err);
+    } finally {
+      setPaymentTermLoading(false); // ✅ finished loading
+    }
+  };
+  fetchPaymentTerms();
+}, []);
+
+
 
 
 
@@ -364,10 +390,42 @@ useEffect(() => {
               <label className={labelClass}>Vendor PO No.</label>
               <input type="text" name="vendor_po_no" value={formData.vendor_po_no ?? ""} onChange={handleChange} className={inputClass} />
             </div>
-            <div>
+            {/* <div>
               <label className={labelClass}>Payment Terms</label>
               <input type="text" name="payment_terms" value={formData.payment_terms ?? ""} onChange={handleChange} className={inputClass} />
-            </div>
+            </div> */}
+
+            <div>
+  <label className={labelClass}>Payment Terms</label>
+  <select
+  name="payment_terms"
+  value={formData.payment_terms ?? ""}
+  onChange={(e) => {
+    if (e.target.value === "ADD_NEW") {
+      setPaymentTermModalOpen(true);
+      setFormData(prev => ({ ...prev, payment_terms: "" }));
+    } else {
+      setFormData(prev => ({ ...prev, payment_terms: e.target.value }));
+    }
+  }}
+  disabled={paymentTermLoading} // ✅ disable while loading
+  className={inputClass}
+>
+  {paymentTermLoading ? (
+    <option>Loading...</option>
+  ) : (
+    <>
+      <option value="">-Select Payment Term-</option>
+      {paymentTermsList.map(pt => (
+        <option key={pt.payment_term_id} value={pt.payment_term_name}>{pt.payment_term_name}</option>
+      ))}
+      <option value="ADD_NEW">+ Add New</option>
+    </>
+  )}
+</select>
+</div>
+
+
             {/* <div>
               <label className={labelClass}>Requested By</label>
               <input type="text" name="requested_by" value={formData.requested_by ?? ""} onChange={handleChange} className={inputClass} />
@@ -532,6 +590,53 @@ useEffect(() => {
           </div>
         </form>
       </div>
+
+      {/* added payment term modal */}
+
+      {paymentTermModalOpen && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="p-6 bg-white rounded shadow-md w-96">
+      <h3 className="mb-4 text-lg font-semibold">Add Payment Term</h3>
+      <input
+        type="text"
+        value={newPaymentTermInput}
+        onChange={e => setNewPaymentTermInput(e.target.value)}
+        className={inputClass}
+        placeholder="Enter new payment term"
+      />
+      <div className="flex justify-end mt-4 space-x-2">
+        <button
+          type="button"
+          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+          onClick={() => setPaymentTermModalOpen(false)}
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
+          onClick={async () => {
+            if (!newPaymentTermInput.trim()) return;
+
+            try {
+              const res = await axios.post(`${API_BASE}/payment-terms`, { payment_term_name: newPaymentTermInput });
+              setPaymentTermsList(prev => [...prev, res.data]);
+              setFormData(prev => ({ ...prev, payment_terms: res.data.payment_term_name }));
+              setNewPaymentTermInput("");
+              setPaymentTermModalOpen(false);
+            } catch (err) {
+              console.error("Failed to add payment term", err);
+            }
+          }}
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
     </div>
   );
 };

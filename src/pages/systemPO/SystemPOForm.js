@@ -52,6 +52,7 @@ const SystemPOForm = ({ systemPO, onSystemPOSaved, onCancel }) => {
 
   const uomOptions = ["PCS", "KG", "MTR", "LITRE", "BOX"]; // add more if needed
 
+
   // Fetch customers
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -110,6 +111,8 @@ useEffect(() => {
     fetchNextPONumber();
   }
 }, [systemPO]);
+
+
 
 
 
