@@ -226,6 +226,7 @@ const SystemPOList = ({ refreshList, onEdit, onDelete }) => {
         department: po.department,
         merchandiser: po.merchandiser,
         type_of_buyer_po: po.type_of_buyer_po,
+        payment_term: po.payment_term,
         total_amount: po.total_amount,
         discount_amount: po.discount_amount,
         sub_total_amount: po.sub_total_amount,
@@ -338,6 +339,7 @@ const SystemPOList = ({ refreshList, onEdit, onDelete }) => {
                 <th className="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase">Department</th>
                 <th className="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase">Buyer Order Date</th>
                 <th className="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase">Expected Delivery</th>
+                <th className="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase">Payment Term</th>
                 <th className="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase">Type of Buyer PO</th>
                 <th className="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase">Total Amount</th>
                 <th className="px-4 py-3 text-xs font-medium text-center text-gray-500 uppercase">Actions</th>
@@ -357,6 +359,7 @@ const SystemPOList = ({ refreshList, onEdit, onDelete }) => {
                     <td className="px-4 py-2 text-sm text-gray-700">{po.department}</td>
                     <td className="px-4 py-2 text-sm text-gray-700">{po.buyer_order_date}</td>
                     <td className="px-4 py-2 text-sm text-gray-700">{po.expected_delivery_date}</td>
+                    <td className="px-4 py-2 text-sm text-gray-700">{po.payment_term}</td>
                     <td className="px-4 py-2 text-sm text-gray-700">{po.type_of_buyer_po}</td>
                     <td className="px-4 py-2 text-sm text-gray-700">{po.total_amount}</td>
 
