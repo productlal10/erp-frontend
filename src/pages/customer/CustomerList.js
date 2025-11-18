@@ -40,6 +40,14 @@ const CustomerList = ({ refreshList, onEdit, onDelete }) => {
         pinCode: cust.billing_pincode,
         billingAddress: cust.billing_address,
         shippingAddress: cust.shipping_address,
+        brandPin:cust.brand_pin,
+        // 🔹 New fields from DB
+        gst_treatment: cust.gst_treatment,
+        pan_no: cust.pan_no,
+        tax_preference: cust.tax_preference,
+        state_name:cust.state,
+        state_name1:cust.state1,
+        gstin_no:cust.gstin_no,
       }));
 
       setCustomers(normalized);

@@ -23,10 +23,16 @@ const emptyForm = {
   shippingAddress: "",
   country: "",
   country1: "",
+  state_name: "",
+  state_name1: "",
   city: "",
   city1: "",
   pinCode: "",
   pinCode1: "",
+  gst_treatment: "",
+  pan_no: "",
+  gstin_no:"",
+  tax_preference: "",
   accountNumber: "",
   accountHolderName: "",
   bankName: "",
@@ -72,10 +78,16 @@ const CustomerForm = ({ customer, onCustomerSaved }) => {
         shippingAddress: valueFromCustomer(customer, "shippingAddress", "ShippingAddress"),
         country: valueFromCustomer(customer, "country", "Country"),
         country1: valueFromCustomer(customer, "country1", "Country1"),
+        state_name: valueFromCustomer(customer, "state_name", "State_Name"),
+        state_name1: valueFromCustomer(customer, "state_name1", "State_Name1"),
         city: valueFromCustomer(customer, "city", "City"),
         city1: valueFromCustomer(customer, "city1", "City1"),
         pinCode: valueFromCustomer(customer, "pinCode", "PinCode"),
         pinCode1: valueFromCustomer(customer, "pinCode1", "PinCode1"),
+        gst_treatment: valueFromCustomer(customer, "gst_treatment", "GST_Treatment"),
+        pan_no: valueFromCustomer(customer, "pan_no", "PAN_No"),
+        gstin_no: valueFromCustomer(customer, "gstin_no", "gstin_No"), 
+        tax_preference: valueFromCustomer(customer, "tax_preference", "Tax_Preference"),
         accountNumber: valueFromCustomer(customer, "accountNumber", "AccountNumber"),
         accountHolderName: valueFromCustomer(customer, "accountHolderName", "AccountHolderName"),
         bankName: valueFromCustomer(customer, "bankName", "BankName"),
@@ -89,6 +101,31 @@ const CustomerForm = ({ customer, onCustomerSaved }) => {
       setInitialData(emptyForm);
     }
   }, [customer]);
+
+// adding this section for the state name
+
+const [states, setStates] = useState([]);
+
+useEffect(() => {
+  fetch("http://localhost:4000/states", {
+    credentials: "include",   // 🔥 VERY IMPORTANT
+  })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error("Failed to fetch states");
+      }
+      return res.json();
+    })
+    .then(data => {
+     // console.log("States fetched:", data);
+      setStates(Array.isArray(data) ? data : []); // 🔒 prevents .map error
+    })
+    .catch(err => {
+      console.error("State fetch error:", err);
+    });
+}, []);
+
+
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -410,6 +447,25 @@ const CustomerForm = ({ customer, onCustomerSaved }) => {
             className="w-64 px-2 py-1 text-sm border border-gray-400 rounded"
           />
         </div>
+{/*  adding this for the field state */}
+
+  <div className="flex items-center">
+  <label className="w-40 text-sm font-medium text-gray-700">Billing State</label>
+  <select
+    name="state_name"
+    value={formData.state_name}
+    onChange={handleChange}
+    className="w-64 px-2 py-1 text-sm border border-gray-400 rounded"
+  >
+    <option value="">-Select-</option>
+    {states.map((s) => (
+      <option key={s.state_code} value={s.state_name}>
+        {s.state_name}
+      </option>
+    ))}
+  </select>
+</div>
+
         <div className="flex items-center">
           <label className="w-40 text-sm font-medium text-gray-700">Country</label>
           <input
@@ -420,6 +476,26 @@ const CustomerForm = ({ customer, onCustomerSaved }) => {
             className="w-64 px-2 py-1 text-sm border border-gray-400 rounded"
           />
         </div>
+
+{/* // adding this for the field state1 */}
+
+<div className="flex items-center">
+  <label className="w-40 text-sm font-medium text-gray-700">Shipping State</label>
+  <select
+    name="state_name1"
+    value={formData.state_name1}
+    onChange={handleChange}
+    className="w-64 px-2 py-1 text-sm border border-gray-400 rounded"
+  >
+    <option value="">-Select-</option>
+    {states.map((s) => (
+      <option key={s.state_code} value={s.state_name}>
+        {s.state_name}
+      </option>
+    ))}
+  </select>
+</div>
+
 
         <div className="flex items-center">
           <label className="w-40 text-sm font-medium text-gray-700">City</label>
@@ -463,6 +539,73 @@ const CustomerForm = ({ customer, onCustomerSaved }) => {
           />
         </div>
       </div>
+
+{/* GST INFORMATION */}
+<h3 className="mt-8 mb-4 text-xl font-semibold">GST Information</h3>
+
+<div className="grid grid-cols-2 gap-6">
+
+  {/* GST Treatment */}
+  <div className="flex items-center">
+    <label className="w-40 text-sm font-medium text-gray-700">GST Treatment</label>
+    <select
+      name="gst_treatment"
+      value={formData.gst_treatment}
+      onChange={handleChange}
+      className="w-64 px-2 py-1 text-sm border border-gray-400 rounded"
+    >
+      <option value="">-Select-</option>
+      <option value="Registered Business - Regular">Registered Business - Regular</option>
+      <option value="Registered Business - Composition">Registered Business - Composition</option>
+      <option value="Unregistered Business">Unregistered Business</option>
+      <option value="Consumer">Consumer</option>
+      <option value="Overseas">Overseas</option>
+      <option value="Special Economic Zone">Special Economic Zone</option>
+    </select>
+  </div>
+
+  {/* PAN Number */}
+  <div className="flex items-center">
+    <label className="w-40 text-sm font-medium text-gray-700">PAN No</label>
+    <input
+      type="text"
+      name="pan_no"
+      value={formData.pan_no}
+      onChange={handleChange}
+      className="w-64 px-2 py-1 text-sm border border-gray-400 rounded"
+    />
+  </div>
+
+  {/* Tax Preference */}
+  <div className="flex items-center">
+    <label className="w-40 text-sm font-medium text-gray-700">Tax Preference</label>
+    <select
+      name="tax_preference"
+      value={formData.tax_preference}
+      onChange={handleChange}
+      className="w-64 px-2 py-1 text-sm border border-gray-400 rounded"
+    >
+      <option value="">-Select-</option>
+      <option value="Taxable">Taxable</option>
+      <option value="Non-Taxable">Non-Taxable</option>
+      <option value="Exempt">Exempt</option>
+    </select>
+  </div>
+
+{/* GSTIN Number */}
+<div className="flex items-center">
+  <label className="w-40 text-sm font-medium text-gray-700">GSTIN No</label>
+  <input
+    type="text"
+    name="gstin_no"
+    value={formData.gstin_no}
+    onChange={handleChange}
+    className="w-64 px-2 py-1 text-sm border border-gray-400 rounded"
+  />
+</div>
+
+</div>
+
 
       {/* Bank Details */}
       <h3 className="mt-8 mb-4 text-xl font-semibold">Bank Details</h3>

@@ -80,6 +80,21 @@ const VendorForm = ({ vendor, onVendorSaved, onCancel }) => {
     setError("");
   }, [vendor]);
 
+// adding useEffect for state master
+
+const [states, setStates] = useState([]);
+
+useEffect(() => {
+  fetch("http://localhost:4000/states", {
+    credentials: "include"
+  })
+    .then(res => res.json())
+    .then(data => setStates(data))
+    .catch(err => console.error("Failed to load states:", err));
+}, []);
+
+
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -138,8 +153,12 @@ const VendorForm = ({ vendor, onVendorSaved, onCancel }) => {
       const data = await resp.json();
       if (!resp.ok) throw new Error(data.error || "Failed to save vendor");
 
+      // show popup
+      alert(formData.vendorId ? "Vendor updated successfully!" : "Vendor created successfully!");
+
+
       // ✅ Show different success messages for create/update
-      setSuccessMsg(formData.vendorId ? "Vendor updated successfully!" : "Vendor created successfully!");
+      //setSuccessMsg(formData.vendorId ? "Vendor updated successfully!" : "Vendor created successfully!");
 
       onVendorSaved(data);
 
@@ -159,7 +178,7 @@ const VendorForm = ({ vendor, onVendorSaved, onCancel }) => {
       {error && <p className="mb-4 text-red-600">{error}</p>}
       {successMsg && <p className="mb-4 text-green-600">{successMsg}</p>}
 
-      {/* Basic Info */}
+      {/* Basic Info
       <div className="grid grid-cols-3 gap-6">
         {[
           ["Vendor First Name", "vendorFirstName"],
@@ -168,7 +187,6 @@ const VendorForm = ({ vendor, onVendorSaved, onCancel }) => {
           ["Vendor Display Name", "vendorDisplayName"],
           ["Primary Contact Email", "primaryContactEmail"],
           ["Primary Contact Mobile", "primaryContactMobileNumber"],
-          ["GST Type", "gstType"],
           ["Primary GST No.", "primaryGstNo"],
         ].map(([label, name]) => (
           <div key={name} className="flex items-center">
@@ -176,7 +194,49 @@ const VendorForm = ({ vendor, onVendorSaved, onCancel }) => {
             <input type="text" name={name} value={formData[name]} onChange={handleChange} className="w-64 px-2 py-1 text-sm border border-gray-400 rounded" />
           </div>
         ))}
-      </div>
+      </div> */}
+
+{/* Basic Info */}
+<div className="grid grid-cols-3 gap-6">
+  {[
+    ["Vendor First Name", "vendorFirstName"],
+    ["Vendor Last Name", "vendorLastName"],
+    ["Company Name", "companyName"],
+    ["Vendor Display Name", "vendorDisplayName"],
+    ["Primary Contact Email", "primaryContactEmail"],
+    ["Primary Contact Mobile", "primaryContactMobileNumber"],
+    ["Primary GST No.", "primaryGstNo"],
+    ["GST Type", "gstType"], // ✅ include GST Type here
+  ].map(([label, name]) => (
+    <div key={name} className="flex items-center">
+      <label className="w-40 text-sm font-medium text-gray-700">{label}</label>
+
+      {name === "gstType" ? (
+        <select
+          name={name}
+          value={formData[name]}
+          onChange={handleChange}
+          className="w-64 px-2 py-1 text-sm border border-gray-400 rounded"
+        >
+          <option value="">Select GST Type</option>
+          <option value="Registered">Registered</option>
+          <option value="Unregistered">Unregistered</option>
+          <option value="Composition">Composition</option>
+          <option value="Consumer">Consumer</option>
+        </select>
+      ) : (
+        <input
+          type="text"
+          name={name}
+          value={formData[name]}
+          onChange={handleChange}
+          className="w-64 px-2 py-1 text-sm border border-gray-400 rounded"
+        />
+      )}
+    </div>
+  ))}
+</div>
+
 
       {/* Additional Details */}
       <h3 className="mt-8 mb-4 text-xl font-semibold">Additional Details</h3>
@@ -190,7 +250,7 @@ const VendorForm = ({ vendor, onVendorSaved, onCancel }) => {
           <textarea name="shippingAddress" value={formData.shippingAddress} onChange={handleChange} className="w-64 px-2 py-1 text-sm border border-gray-400 rounded" rows={4} />
         </div>
 
-        {[
+        {/* {[
           ["Billing Street", "billingStreet"],
           ["Billing Country", "billingCountry"],
           ["Billing City", "billingCity"],
@@ -208,7 +268,54 @@ const VendorForm = ({ vendor, onVendorSaved, onCancel }) => {
             <label className="w-40 text-sm font-medium text-gray-700">{label}</label>
             <input type="text" name={name} value={formData[name]} onChange={handleChange} className="w-64 px-2 py-1 text-sm border border-gray-400 rounded" />
           </div>
+        ))} */}
+        {[
+  ["Billing Street", "billingStreet"],
+  ["Billing Country", "billingCountry"],
+  ["Billing City", "billingCity"],
+  ["Billing State", "billingState"],
+  ["Billing Pin Code", "billingPinCode"],
+  ["Billing Phone", "billingPhone"],
+  ["Shipping Street", "shippingStreet"],
+  ["Shipping Country", "shippingCountry"],
+  ["Shipping City", "shippingCity"],
+  ["Shipping State", "shippingState"],
+  ["Shipping Pin Code", "shippingPinCode"],
+  ["Shipping Phone", "shippingPhone"],
+].map(([label, name]) => (
+  <div key={name} className="flex items-center">
+    <label className="w-40 text-sm font-medium text-gray-700">{label}</label>
+
+    {/* ▓▓ IF field is billingState OR shippingState → show dropdown ▓▓ */}
+    {(name === "billingState" || name === "shippingState") ? (
+      <select
+        name={name}
+        value={formData[name]}
+        onChange={handleChange}
+        className="w-64 px-2 py-1 text-sm border border-gray-400 rounded"
+      >
+        <option value="">Select State</option>
+        {states.map((s) => (
+          <option key={s.state_id} value={s.state_name}>
+            {s.state_name}
+          </option>
         ))}
+      </select>
+    ) : (
+      // otherwise show normal text input
+      <input
+        type="text"
+        name={name}
+        value={formData[name]}
+        onChange={handleChange}
+        className="w-64 px-2 py-1 text-sm border border-gray-400 rounded"
+      />
+    )}
+  </div>
+))}
+
+
+
       </div>
 
       {/* Bank Details */}
