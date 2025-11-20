@@ -38,6 +38,7 @@ const emptyForm = {
   bankName: "",
   branchAddress: "",
   iFSCCode: "",
+  place_of_supply:"",
 };
 
 const CustomerForm = ({ customer, onCustomerSaved }) => {
@@ -93,6 +94,7 @@ const CustomerForm = ({ customer, onCustomerSaved }) => {
         bankName: valueFromCustomer(customer, "bankName", "BankName"),
         branchAddress: valueFromCustomer(customer, "branchAddress", "BranchAddress"),
         iFSCCode: valueFromCustomer(customer, "iFSCCode", "IFSCCode", "iFSCcODE"),
+        place_of_supply:valueFromCustomer(customer,"place_of_supply","Place_of_Supply"),
       };
       setFormData(loaded);
       setInitialData(loaded); // save snapshot for reset
@@ -410,6 +412,8 @@ useEffect(() => {
             className="w-64 px-2 py-1 text-sm border border-gray-400 rounded"
           />
         </div>
+
+
       </div>
 
       {/* Additional Details */}
@@ -603,6 +607,31 @@ useEffect(() => {
     className="w-64 px-2 py-1 text-sm border border-gray-400 rounded"
   />
 </div>
+
+
+{/* Place of Supply */}
+<div className="flex items-center">
+  <label className="w-40 text-sm font-medium text-gray-700">Place of Supply</label>
+  <select
+    name="place_of_supply"
+    value={formData.place_of_supply}
+    onChange={handleChange}
+    className="w-64 px-2 py-1 text-sm border border-gray-400 rounded h-9"
+  >
+    <option value="">-Select-</option>
+    {states.map((s) => (
+      <option key={s.state_code} value={s.state_name}>
+        {s.state_name}
+      </option>
+    ))}
+  </select>
+</div>
+
+
+
+
+
+
 
 </div>
 

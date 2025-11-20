@@ -209,6 +209,7 @@ const handleItemChange = (index, e) => {
   }
 
 
+
   // 🔹 Auto-fill cost sheet mapping
   if (name === "cost_sheet_id") {
     const selectedCostSheet = costSheets.find(
@@ -220,53 +221,125 @@ const handleItemChange = (index, e) => {
     updatedItems[index].cost_sheet_code = value;
   }
 
-  // 🔹 Handle GST treatment conversion
-  if (name === "gst_treatment") {
-    updatedItems[index][name] = parseFloat(value) || 0;
+  // // 🔹 Handle GST treatment conversion
+  // if (name === "gst_treatment") {
+  //   updatedItems[index][name] = parseFloat(value) || 0;
+  // }
+
+  // // 🔹 Calculate per-line amount (with GST)
+  // if (["rate", "quantity", "gst_treatment"].includes(name)) {
+  //   const rate = parseFloat(updatedItems[index].rate) || 0;
+  //   const qty = parseFloat(updatedItems[index].quantity) || 0;
+  //   const gst = parseFloat(updatedItems[index].gst_treatment) || 0;
+
+  //   const baseAmount = rate * qty;
+  //   const gstAmount = (baseAmount * gst) / 100;
+  //   const totalAmount = baseAmount + gstAmount;
+
+  //   updatedItems[index].base_amount = baseAmount.toFixed(2); // optional: show pure amount before GST
+  //   updatedItems[index].gst_value = gstAmount.toFixed(2); // optional: show GST value
+  //   updatedItems[index].amount = totalAmount.toFixed(2);
+  // }
+
+  // // 🔹 Recalculate totals across all line items
+  // const subTotal = updatedItems.reduce(
+  //   (sum, item) =>
+  //     sum + (parseFloat(item.rate) || 0) * (parseFloat(item.quantity) || 0),
+  //   0
+  // );
+
+  // const gstTotal = updatedItems.reduce(
+  //   (sum, item) =>
+  //     sum +
+  //     ((parseFloat(item.rate) || 0) *
+  //       (parseFloat(item.quantity) || 0) *
+  //       (parseFloat(item.gst_treatment) || 0)) /
+  //       100,
+  //   0
+  // );
+
+  // const totalAmount = subTotal + gstTotal;
+
+  // // 🔹 Update formData with all calculated totals
+  // setFormData({
+  //   ...formData,
+  //   items: updatedItems,
+  //   sub_total_amount: subTotal.toFixed(2),
+  //   gst_amount: gstTotal.toFixed(2),
+  //   total_amount: totalAmount.toFixed(2),
+  // });
+/////////////////////////////
+
+// 🔹 Handle GST treatment conversion
+if (name === "gst_treatment") {
+  // If apply_taxes = No, force GST = 0
+  if (updatedItems[index].apply_taxes === "No") {
+    updatedItems[index].gst_treatment = 0;
+  } else {
+    updatedItems[index].gst_treatment = parseFloat(value) || 0;
   }
+}
 
-  // 🔹 Calculate per-line amount (with GST)
-  if (["rate", "quantity", "gst_treatment"].includes(name)) {
-    const rate = parseFloat(updatedItems[index].rate) || 0;
-    const qty = parseFloat(updatedItems[index].quantity) || 0;
-    const gst = parseFloat(updatedItems[index].gst_treatment) || 0;
-
-    const baseAmount = rate * qty;
-    const gstAmount = (baseAmount * gst) / 100;
-    const totalAmount = baseAmount + gstAmount;
-
-    updatedItems[index].base_amount = baseAmount.toFixed(2); // optional: show pure amount before GST
-    updatedItems[index].gst_value = gstAmount.toFixed(2); // optional: show GST value
-    updatedItems[index].amount = totalAmount.toFixed(2);
+// 🔹 Handle Apply Taxes change
+if (name === "apply_taxes") {
+  // If No → GST always 0
+  if (value === "No") {
+    updatedItems[index].gst_treatment = 0;
   }
+}
 
-  // 🔹 Recalculate totals across all line items
-  const subTotal = updatedItems.reduce(
-    (sum, item) =>
-      sum + (parseFloat(item.rate) || 0) * (parseFloat(item.quantity) || 0),
-    0
+// 🔹 Calculate per-line amount (with GST logic)
+if (["rate", "quantity", "gst_treatment", "apply_taxes"].includes(name)) {
+  const rate = parseFloat(updatedItems[index].rate) || 0;
+  const qty = parseFloat(updatedItems[index].quantity) || 0;
+
+  // If apply_taxes = No → GST = 0
+  const gst =
+    updatedItems[index].apply_taxes === "No"
+      ? 0
+      : parseFloat(updatedItems[index].gst_treatment) || 0;
+
+  const baseAmount = rate * qty;
+  const gstAmount = (baseAmount * gst) / 100;
+  const totalAmount = baseAmount + gstAmount;
+
+  updatedItems[index].base_amount = baseAmount.toFixed(2);
+  updatedItems[index].gst_value = gstAmount.toFixed(2);
+  updatedItems[index].amount = totalAmount.toFixed(2);
+}
+
+// 🔹 Recalculate totals across all line items
+const subTotal = updatedItems.reduce(
+  (sum, item) =>
+    sum + (parseFloat(item.rate) || 0) * (parseFloat(item.quantity) || 0),
+  0
+);
+
+const gstTotal = updatedItems.reduce((sum, item) => {
+  const gstRate =
+    item.apply_taxes === "No" ? 0 : parseFloat(item.gst_treatment) || 0;
+
+  return (
+    sum +
+    ((parseFloat(item.rate) || 0) *
+      (parseFloat(item.quantity) || 0) *
+      gstRate) /
+      100
   );
+}, 0);
 
-  const gstTotal = updatedItems.reduce(
-    (sum, item) =>
-      sum +
-      ((parseFloat(item.rate) || 0) *
-        (parseFloat(item.quantity) || 0) *
-        (parseFloat(item.gst_treatment) || 0)) /
-        100,
-    0
-  );
+const totalAmount = subTotal + gstTotal;
 
-  const totalAmount = subTotal + gstTotal;
+// 🔹 Update formData with all calculated totals
+setFormData({
+  ...formData,
+  items: updatedItems,
+  sub_total_amount: subTotal.toFixed(2),
+  gst_amount: gstTotal.toFixed(2),
+  total_amount: totalAmount.toFixed(2),
+});
 
-  // 🔹 Update formData with all calculated totals
-  setFormData({
-    ...formData,
-    items: updatedItems,
-    sub_total_amount: subTotal.toFixed(2),
-    gst_amount: gstTotal.toFixed(2),
-    total_amount: totalAmount.toFixed(2),
-  });
+/////////////////////////////
 };
 
 
@@ -735,21 +808,25 @@ const handleItemChange = (index, e) => {
                       </select>
                     </td>
                     <td className="px-2 py-1 border">
+
                       <select
-                        name="gst_treatment"
-                        value={item.gst_treatment}
-                        onChange={(e) => handleItemChange(index, e)}
-                        className={inputClass}
-                      >
-                        <option value="">-Select-</option>
-                        <option value={3}>3</option>
-                        <option value={5}>5</option>
-                        <option value={6}>6</option>
-                        <option value={9}>9</option>
-                        <option value={12}>12</option>
-                        <option value={18}>18</option>
-            
-                      </select>
+  name="gst_treatment"
+  value={item.gst_treatment}
+  onChange={(e) => handleItemChange(index, e)}
+  className={inputClass}
+  disabled={item.apply_taxes === "No"}  // 🔥 DISABLE GST when apply_taxes = No
+>
+  <option value="">-Select-</option>
+  <option value={0}>0%</option>
+  <option value={3}>3%</option>
+  <option value={5}>5%</option>
+  <option value={6}>6%</option>
+  <option value={9}>9%</option>
+  <option value={12}>12%</option>
+  <option value={18}>18%</option>
+</select>
+
+                  
                     </td>
                     <td className="px-2 py-1 border">
                       <input

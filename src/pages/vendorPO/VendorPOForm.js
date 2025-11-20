@@ -251,42 +251,88 @@ useEffect(() => {
     }
   }
 
-  // 🔹 Ensure GST value is numeric
-  if (name === "gst_treatment") {
-    updatedItems[index][name] = parseFloat(value) || 0;
+  // // 🔹 Ensure GST value is numeric
+  // if (name === "gst_treatment") {
+  //   updatedItems[index][name] = parseFloat(value) || 0;
+  // }
+
+  // // 🔹 Recalculate item amount when rate, qty, or gst_treatment changes
+  // if (["rate", "qty", "gst_treatment"].includes(name)) {
+  //   const rate = parseFloat(updatedItems[index].rate) || 0;
+  //   const qty = parseFloat(updatedItems[index].qty) || 0;
+  //   const gst = parseFloat(updatedItems[index].gst_treatment) || 0;
+
+  //   const baseAmount = rate * qty;
+  //   const totalWithGST = baseAmount + (baseAmount * gst / 100);
+
+  //   updatedItems[index].amount = totalWithGST.toFixed(2);
+  // }
+
+  // // 🔹 Calculate subtotal (without GST)
+  // const subTotal = updatedItems.reduce(
+  //   (sum, item) => sum + (parseFloat(item.rate) || 0) * (parseFloat(item.qty) || 0),
+  //   0
+  // );
+
+  // // 🔹 Calculate total (including GST)
+  // const totalAmount = updatedItems.reduce(
+  //   (sum, item) => sum + (parseFloat(item.amount) || 0),
+  //   0
+  // );
+
+  // // 🔹 Update the formData with calculated totals
+  // setFormData({
+  //   ...formData,
+  //   items: updatedItems,
+  //   sub_total: subTotal.toFixed(2),
+  //   total_amount: totalAmount.toFixed(2),
+  // });
+// 🔹 Ensure GST value is numeric
+if (name === "gst_treatment") {
+  updatedItems[index][name] = parseFloat(value) || 0;
+}
+
+// 🔹 Recalculate item amount when any dependent field changes
+if (["rate", "qty", "gst_treatment", "apply_taxes"].includes(name)) {
+  const rate = parseFloat(updatedItems[index].rate) || 0;
+  const qty = parseFloat(updatedItems[index].qty) || 0;
+  const gst = parseFloat(updatedItems[index].gst_treatment) || 0;
+  const applyTaxes = updatedItems[index].apply_taxes;
+
+  const baseAmount = rate * qty;
+  let finalAmount = baseAmount;
+
+  // 🔹 If Apply Taxes = "No" → GST should be 0 & amount = base amount
+  if (applyTaxes === "No") {
+    updatedItems[index].gst_treatment = 0;
+    finalAmount = baseAmount;
+  } else {
+    // 🔹 Normal GST calculation
+    finalAmount = baseAmount + (baseAmount * gst / 100);
   }
 
-  // 🔹 Recalculate item amount when rate, qty, or gst_treatment changes
-  if (["rate", "qty", "gst_treatment"].includes(name)) {
-    const rate = parseFloat(updatedItems[index].rate) || 0;
-    const qty = parseFloat(updatedItems[index].qty) || 0;
-    const gst = parseFloat(updatedItems[index].gst_treatment) || 0;
+  updatedItems[index].amount = finalAmount.toFixed(2);
+}
 
-    const baseAmount = rate * qty;
-    const totalWithGST = baseAmount + (baseAmount * gst / 100);
+// 🔹 Recalculate subtotal (without GST)
+const subTotal = updatedItems.reduce(
+  (sum, item) => sum + (parseFloat(item.rate) || 0) * (parseFloat(item.qty) || 0),
+  0
+);
 
-    updatedItems[index].amount = totalWithGST.toFixed(2);
-  }
+// 🔹 Recalculate total (with GST or not)
+const totalAmount = updatedItems.reduce(
+  (sum, item) => sum + (parseFloat(item.amount) || 0),
+  0
+);
 
-  // 🔹 Calculate subtotal (without GST)
-  const subTotal = updatedItems.reduce(
-    (sum, item) => sum + (parseFloat(item.rate) || 0) * (parseFloat(item.qty) || 0),
-    0
-  );
-
-  // 🔹 Calculate total (including GST)
-  const totalAmount = updatedItems.reduce(
-    (sum, item) => sum + (parseFloat(item.amount) || 0),
-    0
-  );
-
-  // 🔹 Update the formData with calculated totals
-  setFormData({
-    ...formData,
-    items: updatedItems,
-    sub_total: subTotal.toFixed(2),
-    total_amount: totalAmount.toFixed(2),
-  });
+// 🔹 Update form data
+setFormData({
+  ...formData,
+  items: updatedItems,
+  sub_total: subTotal.toFixed(2),
+  total_amount: totalAmount.toFixed(2),
+});
 };
 
 
@@ -529,7 +575,7 @@ useEffect(() => {
                       </select>
                     </td>
                     <td className="px-2 py-1 border">
-                      <select
+                      {/* <select
                         name="gst_treatment"
                         value={item.gst_treatment}
                         onChange={(e) => handleItemChange(idx, e)}
@@ -543,7 +589,23 @@ useEffect(() => {
                         <option value={12}>12</option>
                         <option value={18}>18</option>
             
-                      </select>
+                      </select> */}
+                      <select
+  name="gst_treatment"
+  value={item.gst_treatment || 0}   // ✅ force UI to show 0 when Apply Taxes = "No"
+  onChange={(e) => handleItemChange(idx, e)}
+  className={inputClass}
+  disabled={item.apply_taxes === "No"}   // ✅ optional but recommended
+>
+  <option value={0}>0</option>   {/* ✅ Add 0 option for Apply Taxes = No */}
+  <option value={3}>3</option>
+  <option value={5}>5</option>
+  <option value={6}>6</option>
+  <option value={9}>9</option>
+  <option value={12}>12</option>
+  <option value={18}>18</option>
+</select>
+
                     </td>
                     <td className="px-2 py-1 border">
                       <input type="number" name="amount" value={item.amount ?? 0} readOnly className={inputClass} />
