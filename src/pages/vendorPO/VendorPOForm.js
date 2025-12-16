@@ -11,6 +11,7 @@ const VendorPOForm = ({ vendorPO, onVendorPOSaved, onCancel }) => {
   const [itemsList, setItemsList] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [isUpdate, setIsUpdate] = useState(false);
+  
 
   const [formData, setFormData] = useState({
     vendor_id: "",
@@ -31,6 +32,7 @@ const VendorPOForm = ({ vendorPO, onVendorPOSaved, onCancel }) => {
         item_name: "",
         style_number: "",
         sku_code: "",
+        style_name_buyer_po: "",
         units_of_measure: "",
         rate: "",
         qty: "",
@@ -54,6 +56,8 @@ const [paymentTermsList, setPaymentTermsList] = useState([]);
 const [newPaymentTermInput, setNewPaymentTermInput] = useState("");
 const [paymentTermModalOpen, setPaymentTermModalOpen] = useState(false);
 const [paymentTermLoading, setPaymentTermLoading] = useState(false);
+
+
 
 
 
@@ -251,6 +255,8 @@ useEffect(() => {
     }
   }
 
+  
+
   // // 🔹 Ensure GST value is numeric
   // if (name === "gst_treatment") {
   //   updatedItems[index][name] = parseFloat(value) || 0;
@@ -347,6 +353,7 @@ setFormData({
           item_name: "",
           style_number: "",
           sku_code: "",
+          style_name_buyer_po: "",
           units_of_measure: "",
           rate: "",
           qty: "",
@@ -358,6 +365,8 @@ setFormData({
       ],
     }));
   };
+
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -532,6 +541,7 @@ setFormData({
                   <th className="px-2 py-2 border">Item Name</th>
                   <th className="px-2 py-2 border">Style Number</th>
                   <th className="px-2 py-2 border">SKU Code</th>
+                  <th className="px-2 py-2 border">Buyer Style Name</th>
                   <th className="px-2 py-2 border">UOM</th>
                   <th className="px-2 py-2 border">Rate</th>
                   <th className="px-2 py-2 border">Qty</th>
@@ -557,9 +567,24 @@ setFormData({
                     <td className="px-2 py-1 border">
                       <input type="text" name="sku_code" value={item.sku_code ?? ""} onChange={e => handleItemChange(idx, e)} className={inputClass} />
                     </td>
-                    {/* <td className="px-2 py-1 border">
-                      <input type="text" name="units_of_measure" value={item.units_of_measure ?? ""} onChange={e => handleItemChange(idx, e)} className={inputClass} />
-                    </td> */}
+
+                    <td className="px-2 py-1 border">
+  <select
+    name="style_name_buyer_po"
+    value={item.style_name_buyer_po ?? ""}
+    onChange={(e) => handleItemChange(idx, e)}
+    className={inputClass}
+  >
+    <option value="">-Select Style-</option>
+    {itemsList.map((i, index) => (
+      <option key={i.item_id ?? index} value={i.style_number}>
+        {i.style_number}
+      </option>
+    ))}
+  </select>
+  
+</td>
+                  
                     <td className="px-2 py-1 border"> <select name="units_of_measure" value={item.units_of_measure ?? ""} onChange={e => handleItemChange(idx, e)} className={inputClass} > <option value="">-Select UOM-</option> {uomOptions.map((uom) => ( <option key={uom} value={uom}> {uom}</option>))} </select> </td>
                     <td className="px-2 py-1 border">
                       <input type="number" name="rate" value={item.rate ?? 0} onChange={e => handleItemChange(idx, e)} className={inputClass} />
