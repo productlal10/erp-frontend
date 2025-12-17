@@ -17,8 +17,7 @@ Make sure you have:
 ## Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/erp-project.git
-cd erp-project/frontend
+git clone https://github.com/productlal10/erp-frontend.git
 ```
 
 ---
