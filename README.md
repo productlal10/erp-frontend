@@ -6,68 +6,71 @@ This folder contains the **frontend** of the ERP application. Follow the steps b
 
 ## Prerequisites
 
-Make sure you have:
+Make sure you have the following installed on your computer:
 
 * Node.js (v16 or above)
-* npm
+* npm (comes with Node.js)
 * Git
 
+> Node.js needs to be installed only once on your computer.
+
 ---
 
-## Clone the Repository
+## Install Required Software
 
+### Install Node.js & npm
+Download and install from:
+https://nodejs.org
+
+Verify installation:
 ```bash
+node -v
+npm -v
+Install Git
+Download and install from:
+https://git-scm.com
+
+Verify installation:
+
+bash
+Copy code
+git --version
+Clone the Repository
+bash
+Copy code
 git clone https://github.com/productlal10/erp-frontend.git
-```
-
----
-
-## Install Dependencies
-
-```bash
+cd erp-frontend
+Install Dependencies
+bash
+Copy code
 npm install
-```
+Environment Setup
+Create a .env file inside the frontend folder:
 
----
-
-## Environment Setup
-
-Create a `.env` file inside the **frontend** folder:
-
-```env
+env
+Copy code
 REACT_APP_API_BASE_URL=http://localhost:4000
-```
+Update the API URL if your backend runs on a different port.
 
-> Update the API URL if your backend runs on a different port.
-
----
-
-## Run the Frontend
-
-```bash
+Run the Frontend
+bash
+Copy code
 npm start
-```
-
 Frontend will run on:
 
-```
+arduino
+Copy code
 http://localhost:3000
-```
+Verify Frontend
+Application loads in the browser
 
----
+API calls connect to backend
 
-## Verify Frontend
+Pages and forms work correctly
 
-* Application loads in the browser
-* API calls connect to backend
-* Forms and pages work as expected
+Common Issues
+Blank screen → Check browser console
 
----
+API not working → Make sure backend is running
 
-## Common Issues
-
-* Blank screen → Check console errors
-* API not working → Ensure backend is running
-* CORS issue → Configure backend CORS
-
----
+Environment variables not working → Restart frontend server
