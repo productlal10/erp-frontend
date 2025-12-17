@@ -27,39 +27,36 @@ Verify installation:
 node -v
 npm -v
 Install Git
-Download and install from:
-https://git-scm.com
+Download and install from: https://git-scm.com
 
 Verify installation:
 
-bash
-Copy code
+Bash
+
 git --version
 Clone the Repository
-bash
-Copy code
-git clone https://github.com/productlal10/erp-frontend.git
+Bash
+
+git clone [https://github.com/productlal10/erp-frontend.git](https://github.com/productlal10/erp-frontend.git)
 cd erp-frontend
 Install Dependencies
-bash
-Copy code
+Bash
+
 npm install
 Environment Setup
 Create a .env file inside the frontend folder:
 
-env
-Copy code
+Code snippet
+
 REACT_APP_API_BASE_URL=http://localhost:4000
 Update the API URL if your backend runs on a different port.
 
 Run the Frontend
-bash
-Copy code
+Bash
+
 npm start
 Frontend will run on:
 
-arduino
-Copy code
 http://localhost:3000
 Verify Frontend
 Application loads in the browser
