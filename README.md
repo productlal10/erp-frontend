@@ -1,3 +1,6 @@
+
+
+```markdown
 # ERP Frontend
 
 This folder contains the **frontend** of the ERP application. Follow the steps below to run the frontend locally for testing and development.
@@ -8,65 +11,89 @@ This folder contains the **frontend** of the ERP application. Follow the steps b
 
 Make sure you have the following installed on your computer:
 
-* Node.js (v16 or above)
-* npm (comes with Node.js)
-* Git
+* **Node.js** (v16 or above)
+* **npm** (comes with Node.js)
+* **Git**
 
-> Node.js needs to be installed only once on your computer.
 
 ---
 
 ## Install Required Software
 
-### Install Node.js & npm
+### 1. Install Node.js & npm
 Download and install from: [https://nodejs.org](https://nodejs.org)
 
-Verify installation:
-bash
+**Verify installation:**
+```bash
 node -v
 npm -v
-Install Git
-Download and install from: https://git-scm.com
 
-Verify installation:
+```
 
-Bash
+### 2. Install Git
 
+Download and install from: [https://git-scm.com](https://git-scm.com)
+
+**Verify installation:**
+
+```bash
 git --version
-Getting Started
-Clone the Repository
-Bash
 
+```
+
+---
+
+## Getting Started
+
+### 1. Clone the Repository
+
+```bash
 git clone [https://github.com/productlal10/erp-frontend.git](https://github.com/productlal10/erp-frontend.git)
 cd erp-frontend
-Install Dependencies
-Bash
 
+```
+
+### 2. Install Dependencies
+
+```bash
 npm install
-Environment Setup
-Create a .env file inside the frontend folder:
 
-Code snippet
+```
 
+### 3. Environment Setup
+
+Create a file named `.env` inside the **frontend** folder:
+
+```env
 REACT_APP_API_BASE_URL=http://localhost:4000
-Update the API URL if your backend runs on a different port.
 
-Run the Frontend
-Bash
+```
 
+> **Note:** Update the API URL if your backend runs on a different port.
+
+---
+
+## Run the Frontend
+
+```bash
 npm start
-Frontend will run on: http://localhost:3000
 
-Verify Frontend
-Application loads in the browser
+```
 
-API calls connect to backend
+The frontend will run on: [http://localhost:3000](https://www.google.com/search?q=http://localhost:3000)
 
-Pages and forms work correctly
+---
 
-Common Issues
-Blank screen → Check browser console
+## Verify Frontend
 
-API not working → Make sure backend is running
+* **Browser:** Application loads in the browser.
+* **Connectivity:** API calls connect to backend.
+* **Functionality:** Pages and forms work correctly.
 
-Environment variables not working → Restart frontend server
+---
+
+## Common Issues
+
+* **Blank screen** → Check browser console.
+* **API not working** → Make sure backend is running.
+* **Environment variables not working** → Restart frontend server.
