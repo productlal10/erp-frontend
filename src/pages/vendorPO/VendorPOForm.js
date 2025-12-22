@@ -10,12 +10,17 @@ const VendorPOForm = ({ vendorPO, onVendorPOSaved, onCancel }) => {
   const [systemPOs, setSystemPOs] = useState([]);
   const [itemsList, setItemsList] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [buyerPOLineItems, setBuyerPOLineItems] = useState([]);
+  const [costSheets, setCostSheets] = useState([]);
+
   const [isUpdate, setIsUpdate] = useState(false);
   
 
   const [formData, setFormData] = useState({
     vendor_id: "",
     order_type: "",
+    sampling_type: "",
+    sampling_purpose:"",
     vendor_company_name: "",
     vendor_name: "",
     vendor_code: "",
@@ -27,26 +32,13 @@ const VendorPOForm = ({ vendorPO, onVendorPOSaved, onCancel }) => {
     buyer_company_name: "",
     purchase_order_date: "",
     expected_delivery_date: "",
-    items: [
-      {
-        item_name: "",
-        style_number: "",
-        sku_code: "",
-        style_name_buyer_po: "",
-        units_of_measure: "",
-        rate: "",
-        qty: "",
-        apply_taxes: "",
-        gst_treatment: "",
-        amount: "",
-        vendor_po_number: "",
-      },
-    ],
+    items: [ ],
     sub_total: "",
     shipping_cost: "",
     discount: "",
     total_amount: "",
     terms_and_conditions: "",
+    vendor_address:"",
   });
 
   const uomOptions = ["PCS", "KG", "MTR", "LITRE", "BOX"]; // add more if needed
@@ -57,7 +49,22 @@ const [newPaymentTermInput, setNewPaymentTermInput] = useState("");
 const [paymentTermModalOpen, setPaymentTermModalOpen] = useState(false);
 const [paymentTermLoading, setPaymentTermLoading] = useState(false);
 
+//----------NEW USE-EFFECT-------------
 
+useEffect(() => {
+  axios.get(`${API_BASE}/buyer_po_line_items`)
+    .then(res => setBuyerPOLineItems(res.data || []))
+    .catch(() => {});
+}, []);
+
+useEffect(() => {
+  axios.get(`${API_BASE}/costsheets`)
+    .then(res => setCostSheets(res.data || []))
+    .catch(() => {});
+}, []);
+
+
+//----------END USE EFFECT------------
 
 
 
@@ -169,8 +176,27 @@ useEffect(() => {
   fetchPaymentTerms();
 }, []);
 
+//-------------------------
 
+// ✅ Buyer PO filtered items (FOB only)
+const filteredBuyerPOItems =
+  (formData.order_type === "FOB" || formData.order_type==="Garmenting" || formData.order_type==="Fabric Processing" || formData.order_type==="Fabrics Purchase" || formData.order_type==="Trims Purchase" || formData.order_type==="Sampling") && formData.system_po_id
+    ? buyerPOLineItems.filter(
+        li => li.system_po_id === formData.system_po_id
+      )
+    : [];
 
+    const filteredItemsForItemName =
+    formData.order_type === "FOB"
+      ? itemsList.filter(i => i.item_type === "Goods")
+      : formData.order_type==="Fabric Processing"
+      ? itemsList.filter(i=>i.item_type==="Service")
+      : formData.order_type==="Fabrics Purchase"
+      ? itemsList.filter(i=>i.item_type==="Fabrics")
+      : formData.order_type==="Trims Purchase"
+      ? itemsList.filter(i=>i.item_type==="Trims")
+      : itemsList;
+  
 
 
   const handleChange = (e) => {
@@ -185,7 +211,10 @@ useEffect(() => {
         vendor_code: selectedVendor?.vendor_code || "",
         primary_email_id: selectedVendor?.primary_contact_email || "",
         vendor_id: selectedVendor?.vendor_id || "null",
+        vendor_address: selectedVendor?.billing_address || "",
       }));
+
+
       return;
     }
 
@@ -202,40 +231,20 @@ useEffect(() => {
       return;
     }
 
+    // ✅ 👉 ADD THIS BLOCK HERE
+  if (name === "order_type") {
+    setFormData(prev => ({
+      ...prev,
+      order_type: value,
+      sampling_type: value === "Sampling" ? prev.sampling_type : "",
+      sampling_purpose: value === "Sampling" ? prev.sampling_purpose : "" 
+    }));
+    return;
+  }
+
+
     setFormData(prev => ({ ...prev, [name]: value }));
   };
-
-  // const handleItemChange = (index, e) => {
-  //   const { name, value } = e.target;
-  //   const updatedItems = [...formData.items];
-
-  //   if (name === "item_name") {
-  //     const selectedItem = itemsList.find(i => i.item_name === value);
-  //     updatedItems[index] = {
-  //       ...updatedItems[index],
-  //       item_name: value,
-  //       style_number: selectedItem?.style_number || "",
-  //       sku_code: selectedItem?.item_sku || "",
-  //       item_id: selectedItem?.item_id || null,
-  //     };
-  //   }
-  //   // ✅ Convert gst_treatment to a number
-  // else if (name === "gst_treatment") {
-  //   updatedItems[index][name] = parseFloat(value) || 0;
-  // } 
-  
-  //   else {
-  //     updatedItems[index][name] = value;
-  //   }
-
-  //   if (name === "rate" || name === "qty") {
-  //     const rate = parseFloat(updatedItems[index].rate) || 0;
-  //     const qty = parseFloat(updatedItems[index].qty) || 0;
-  //     updatedItems[index].amount = (rate * qty).toFixed(2);
-  //   }
-
-  //   setFormData({ ...formData, items: updatedItems });
-  // };
 
 
   const handleItemChange = (index, e) => {
@@ -246,54 +255,264 @@ useEffect(() => {
   updatedItems[index][name] = value;
 
   // 🔹 Auto-fill item details when item_name changes
-  if (name === "item_name") {
-    const selectedItem = itemsList.find(i => i.item_name === value);
-    if (selectedItem) {
-      updatedItems[index].style_number = selectedItem.style_number || "";
-      updatedItems[index].sku_code = selectedItem.item_sku || "";
-      updatedItems[index].item_id = selectedItem.item_id || null;
+  // 🔹 Auto-fill item details + rate when item_name changes
+if (name === "item_name") {
+
+/* 🔹 APPLY ITEM MASTER LOGIC ONLY FOR FOB */
+if (formData.order_type === "FOB" || formData.order_type === "Sampling") {
+
+  const masterItem = itemsList.find(
+    i => i.item_name === value
+  );
+
+  if (!masterItem) {
+    alert("Item not found in Item Master");
+    updatedItems[index].item_name = "";
+    updatedItems[index].item_id = null;
+    return;
+  }
+
+  updatedItems[index].item_id = masterItem.item_id;
+  updatedItems[index].style_number = masterItem.style_number || "";
+  updatedItems[index].sku_code = masterItem.item_sku || "";
+}
+
+// ⬇️ keep your existing Buyer PO → Cost Sheet logic BELOW this
+  
+  // get buyer PO style for this row
+  const selectedStyle = updatedItems[index].style_name_buyer_po;
+ // if (!selectedStyle || !formData.system_po_id) return;
+
+if (
+  (formData.order_type === "FOB" ||
+    formData.order_type === "Garmenting" ||
+    formData.order_type === "Fabric Processing" ||
+    formData.order_type === "Fabrics Purchase" ||
+    formData.order_type === "Trims Purchase")
+  &&
+  (!selectedStyle || !formData.system_po_id)
+) {
+  return;
+}
+
+
+  // find buyer PO line item
+  const lineItem = buyerPOLineItems.find(
+    li =>
+      li.style_number === selectedStyle &&
+      li.system_po_id === formData.system_po_id
+  );
+  if (!lineItem) return;
+
+  // ✅ Set style & sku from Buyer PO for non-FOB
+if (formData.order_type !== "FOB" &&  formData.order_type !=="Sampling") {
+  updatedItems[index].style_number = lineItem.style_number || "";
+  updatedItems[index].sku_code = lineItem.sku_code || "";
+}
+
+
+
+  // ✅ ADD THIS LINE HERE
+  const buyerQty = Number(lineItem.quantity || 0);
+
+  // find cost sheet
+  const costSheet = costSheets.find(
+    cs => cs.cost_sheet_id === lineItem.cost_sheet_id
+  );
+  if (!costSheet) return;
+
+  /* ================= FABRIC PROCESSING ================= */
+  if (
+    formData.order_type === "Fabric Processing" &&
+    Array.isArray(costSheet.processing_details)
+  ) {
+    const row = costSheet.processing_details.find(
+      p => p.process_name === value
+    );
+  
+    if (row) {
+      updatedItems[index].rate = row.rate || 0;
+  
+      // ✅ QTY = Buyer PO Qty × Construction
+      const construction = Number(row.construction || 1);
+      updatedItems[index].qty = buyerQty * construction;
     }
+  }
+  
+
+  /* ================= FABRICS PURCHASE ================= */
+  if (
+    formData.order_type === "Fabrics Purchase" &&
+    Array.isArray(costSheet.fabric_details)
+  ) {
+    const row = costSheet.fabric_details.find(
+      f => f.fabric_name === value
+    );
+  
+    if (row) {
+      updatedItems[index].rate = row.rate || 0;
+  
+      const construction = Number(row.construction || 1);
+      updatedItems[index].qty = buyerQty * construction;
+    }
+  }
+  
+  /* ================= TRIMS PURCHASE ================= */
+  
+  if (
+    formData.order_type === "Trims Purchase" &&
+    Array.isArray(costSheet.stores_or_grinderies_details)
+  ) {
+    const row = costSheet.stores_or_grinderies_details.find(
+      t => t.stores_or_grinderis_name === value
+    );
+  
+    if (row) {
+      updatedItems[index].rate = row.rate || 0;
+  
+      const construction = Number(row.construction || 1);
+      updatedItems[index].qty = buyerQty * construction;
+    }
+  }
+  
+
+}
+
+
+//----------------NEW HANDLE ITEM CHANGE-------
+if (
+  name === "style_name_buyer_po" &&
+  formData.system_po_id
+) {
+  const lineItem = buyerPOLineItems.find(
+    li =>
+      li.style_number === value &&
+      li.system_po_id === formData.system_po_id
+  );
+
+  if (!lineItem) return;
+
+  const costSheet = costSheets.find(
+    cs => cs.cost_sheet_id === lineItem.cost_sheet_id
+  );
+
+
+  // ✅ Fabric Processing → store processing details INSIDE THIS ROW
+if (formData.order_type === "Fabric Processing" && costSheet) {
+  updatedItems[index].processing_details =
+    Array.isArray(costSheet.processing_details)
+      ? costSheet.processing_details
+      : [];
+
+  updatedItems[index].item_name = "";
+  updatedItems[index].rate = 0;
+}
+
+
+// ✅ Fabrics Purchase → store fabric details INSIDE THIS ROW
+if (formData.order_type === "Fabrics Purchase" && costSheet) {
+  updatedItems[index].fabric_details =
+    Array.isArray(costSheet.fabric_details)
+      ? costSheet.fabric_details
+      : [];
+
+  updatedItems[index].item_name = "";
+  updatedItems[index].rate = 0;
+}
+
+// ✅ Trims Purchase → store fabric details INSIDE THIS ROW
+if(formData.order_type==="Trims Purchase" && costSheet) {
+  updatedItems[index].stores_or_grinderies_details=
+  Array.isArray(costSheet.stores_or_grinderies_details)
+  ? costSheet.stores_or_grinderies_details
+  : [];
+
+  updatedItems[index].item_name="";
+  updatedItems[index].rate=0;
+}        
+
+
+  
+  // ❌ NON-FOB order using FOB cost sheet (THIS IS YOUR CASE)
+  if (
+    formData.order_type !== "FOB" &&
+    formData.order_type !== "Sampling" &&  
+    costSheet &&
+    costSheet.order_type === "FOB"
+  ) {
+    alert("FOB cost sheet cannot be used for non-FOB orders");
+
+    updatedItems[index].style_name_buyer_po = "";
+    updatedItems[index].rate = 0;
+    updatedItems[index].qty = 0;
+    updatedItems[index].amount = 0;
+
+    setFormData({ ...formData, items: updatedItems });
+    return;
+  }
+
+  // ❌ FOB order but cost sheet is NOT FOB
+  if (
+    formData.order_type === "FOB" &&
+    costSheet &&
+    costSheet.order_type !== "FOB"
+  ) {
+    alert("Cost sheet is not for FOB order");
+
+    updatedItems[index].style_name_buyer_po = "";
+    updatedItems[index].rate = 0;
+    updatedItems[index].qty = 0;
+    updatedItems[index].amount = 0;
+
+    setFormData({ ...formData, items: updatedItems });
+    return;
   }
 
   
+  // ✅ Valid FOB → auto-fill
+  if (formData.order_type === "FOB"  && costSheet) {
+    
+    updatedItems[index].rate = costSheet.cost_price || 0;
+    updatedItems[index].qty = lineItem.quantity || 0;
+  }
 
-  // // 🔹 Ensure GST value is numeric
-  // if (name === "gst_treatment") {
-  //   updatedItems[index][name] = parseFloat(value) || 0;
-  // }
 
-  // // 🔹 Recalculate item amount when rate, qty, or gst_treatment changes
-  // if (["rate", "qty", "gst_treatment"].includes(name)) {
-  //   const rate = parseFloat(updatedItems[index].rate) || 0;
-  //   const qty = parseFloat(updatedItems[index].qty) || 0;
-  //   const gst = parseFloat(updatedItems[index].gst_treatment) || 0;
+// ✅ Valid Sampling → auto-fill
+if (formData.order_type === "Sampling"  && costSheet) {
+    
+  updatedItems[index].rate = costSheet.cost_price || 0;
+  updatedItems[index].qty = lineItem.quantity || 0;
+}
 
-  //   const baseAmount = rate * qty;
-  //   const totalWithGST = baseAmount + (baseAmount * gst / 100);
 
-  //   updatedItems[index].amount = totalWithGST.toFixed(2);
-  // }
 
-  // // 🔹 Calculate subtotal (without GST)
-  // const subTotal = updatedItems.reduce(
-  //   (sum, item) => sum + (parseFloat(item.rate) || 0) * (parseFloat(item.qty) || 0),
-  //   0
-  // );
 
-  // // 🔹 Calculate total (including GST)
-  // const totalAmount = updatedItems.reduce(
-  //   (sum, item) => sum + (parseFloat(item.amount) || 0),
-  //   0
-  // );
+  // ✅ GARMENTING → set CMT rate & buyer qty
+if (
+  formData.order_type === "Garmenting" &&
+  costSheet &&
+  Array.isArray(costSheet.labor_details)
+) {
+  const laborRow = costSheet.labor_details.find(
+    l => l.labor === "CMT"
+  );
 
-  // // 🔹 Update the formData with calculated totals
-  // setFormData({
-  //   ...formData,
-  //   items: updatedItems,
-  //   sub_total: subTotal.toFixed(2),
-  //   total_amount: totalAmount.toFixed(2),
-  // });
-// 🔹 Ensure GST value is numeric
+  if (laborRow) {
+    updatedItems[index].rate = laborRow.rate || 0;
+    updatedItems[index].qty = lineItem.quantity || 0;
+  }
+}
+
+
+
+
+
+
+
+}
+
+  
+//----------------NEW HANDLE ITEM CHANGE-------
 if (name === "gst_treatment") {
   updatedItems[index][name] = parseFloat(value) || 0;
 }
@@ -344,27 +563,61 @@ setFormData({
 
 
 
-  const addItem = () => {
-    setFormData(prev => ({
-      ...prev,
-      items: [
-        ...prev.items,
-        {
-          item_name: "",
-          style_number: "",
-          sku_code: "",
-          style_name_buyer_po: "",
-          units_of_measure: "",
-          rate: "",
-          qty: "",
-          apply_taxes: "",
-          gst_treatment: "",
-          amount: "",
-          vendor_po_number: formData.vendor_po_no,
-        },
-      ],
-    }));
-  };
+const addItem = () => {
+  const isGarmenting = formData.order_type === "Garmenting";
+
+  const cmtItem = isGarmenting
+    ? itemsList.find(i => i.item_id === 19)
+    : null;
+
+  setFormData(prev => ({
+    ...prev,
+    items: [
+      ...prev.items,
+      {
+        item_name: cmtItem?.item_name || "",
+        style_number: cmtItem?.style_number || "",
+        sku_code: cmtItem?.item_sku || "",
+        item_id: cmtItem?.item_id || null,
+        style_name_buyer_po: "",
+        units_of_measure: "",
+        rate: "",
+        qty: "",
+        apply_taxes: "",
+        gst_treatment: "",
+        amount: "",
+        vendor_po_number: prev.vendor_po_no,
+      },
+    ],
+  }));
+};
+
+
+const removeItem = (index) => {
+  const updatedItems = formData.items.filter((_, i) => i !== index);
+
+  // 🔹 Recalculate subtotal
+  const subTotal = updatedItems.reduce(
+    (sum, item) =>
+      sum +
+      (parseFloat(item.rate) || 0) * (parseFloat(item.qty) || 0),
+    0
+  );
+
+  // 🔹 Recalculate total
+  const totalAmount = updatedItems.reduce(
+    (sum, item) => sum + (parseFloat(item.amount) || 0),
+    0
+  );
+
+  setFormData({
+    ...formData,
+    items: updatedItems,
+    sub_total: subTotal.toFixed(2),
+    total_amount: totalAmount.toFixed(2),
+  });
+};
+
 
   
 
@@ -414,11 +667,57 @@ setFormData({
     <option value="Garmenting">Garmenting</option>
     <option value="Fabric Processing">Fabric Processing</option>
     <option value="FOB">FOB</option>
-    <option value="Direct Purchase">Direct Purchase</option>
+    <option value="Testing - FPT/GPT etc.">Testing - FPT/GPT etc.</option>
     <option value="Fabrics Purchase">Fabrics Purchase</option>
     <option value="Trims Purchase">Trims Purchase</option>
+    <option value="Sampling">Sampling</option>
   </select>
 </div>
+
+
+{/*-----Adding a New Field called Sampling Type-------*/}
+{formData.order_type === "Sampling" && (
+<div>
+  <label className={labelClass}>Sampling Type</label>
+  <select
+    name="sampling_type"
+    value={formData.sampling_type ?? ""}
+    onChange={handleChange}
+    className={inputClass}
+  >
+    <option value="">- Select Sampling Type -</option>
+    <option value="Garmenting">Garmenting</option>
+    <option value="Fabric Processing">Fabric Processing</option>
+    <option value="Direct Purchase">Direct Purchase</option>
+    <option value="Fabric Purchase">Fabric Purchase</option>
+    <option value="Trim Purchase">Trim Purchase</option>
+    <option value="Design Sampling">Design Sampling</option>
+  </select>
+</div>
+)}
+
+{/*-----Adding a New Field called Sampling Purpose-------*/}
+{formData.order_type === "Sampling" && (
+  <div>
+    <label className={labelClass}>Sampling Purpose</label>
+    <select
+      name="sampling_purpose"
+      value={formData.sampling_purpose ?? ""}
+      onChange={handleChange}
+      className={inputClass}
+    >
+      <option value="">- Select Sampling Purpose -</option>
+      <option value="Order based Sampling">Order based Sampling</option>
+      <option value="Lal10 Sampling Collection">Lal10 Sampling Collection</option>
+      <option value="Sampling for Buyer (Not for Order)">Sampling for Buyer (Not for Order)</option>
+      
+    </select>
+  </div>
+)}
+
+{/*-----Adding a New Field-------*/}
+
+
             <div>
             
               <label className={labelClass}>Vendor Company</label>
@@ -504,6 +803,19 @@ setFormData({
 </div>
 
 
+<div>
+  <label className={labelClass}>Vendor Address</label>
+  <textarea
+    name="vendor_address"
+    value={formData.vendor_address ?? ""}
+    onChange={handleChange}
+    className={`${inputClass} h-24`}
+    placeholder="Enter vendor address"
+  />
+</div>
+
+
+
           </div>
 
           {/* Buyer PO Info */}
@@ -538,52 +850,113 @@ setFormData({
             <table className="min-w-full border border-gray-300 divide-y divide-gray-200">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="px-2 py-2 border">Item Name</th>
-                  <th className="px-2 py-2 border">Style Number</th>
-                  <th className="px-2 py-2 border">SKU Code</th>
+                  <th className="w-10 px-2 py-2 border"></th>
                   <th className="px-2 py-2 border">Buyer Style Name</th>
+                  <th className="px-2 py-2 border">Item Name</th>
+                  {(formData.order_type !=="Garmenting" && formData.order_type !=="Fabric Processing") && (<th className="px-2 py-2 border">Style Number</th> )}
+                  {(formData.order_type !== "Garmenting" &&  formData.order_type!=="Fabric Processing") && (<th className="px-2 py-2 border">SKU Code</th> )}
                   <th className="px-2 py-2 border">UOM</th>
                   <th className="px-2 py-2 border">Rate</th>
                   <th className="px-2 py-2 border">Qty</th>
                   <th className="px-2 py-2 border">Apply Taxes</th>
                   <th className="px-2 py-2 border">Taxes</th>
                   <th className="px-2 py-2 border">Amount</th>
+                
+
                 </tr>
               </thead>
               <tbody>
                 {formData.items.map((item, idx) => (
                   <tr key={idx} className="border-t border-gray-200">
-                    <td className="px-2 py-1 border">
-                      <select name="item_name" value={item.item_name ?? ""} onChange={e => handleItemChange(idx, e)} className={inputClass}>
-                        <option value="">-Select Item-</option>
-                        {itemsList.map((i, index) => (
-                          <option key={i.item_id ?? index} value={i.item_name}>{i.item_name}</option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="px-2 py-1 border">
-                      <input type="text" name="style_number" value={item.style_number ?? ""} onChange={e => handleItemChange(idx, e)} className={inputClass} />
-                    </td>
-                    <td className="px-2 py-1 border">
-                      <input type="text" name="sku_code" value={item.sku_code ?? ""} onChange={e => handleItemChange(idx, e)} className={inputClass} />
-                    </td>
+                      <td className="px-2 py-1 text-center border">
+  <button
+    type="button"
+    onClick={() => removeItem(idx)}
+    className="font-bold text-red-600 hover:text-red-800"
+    title="Remove row"
+  >
+    ✕
+  </button>
+</td>
 
-                    <td className="px-2 py-1 border">
+<td className="px-2 py-1 border">
+  
+
   <select
     name="style_name_buyer_po"
     value={item.style_name_buyer_po ?? ""}
     onChange={(e) => handleItemChange(idx, e)}
     className={inputClass}
+    disabled={(formData.order_type === "FOB" || formData.order_type==="Garmenting" || formData.order_type==="Fabric Processing" || formData.order_type==="Fabrics Purchase" || formData.order_type==="Trims Purchase" || formData.order_type==="Sampling") && !formData.system_po_id}
   >
     <option value="">-Select Style-</option>
-    {itemsList.map((i, index) => (
-      <option key={i.item_id ?? index} value={i.style_number}>
-        {i.style_number}
-      </option>
-    ))}
+  
+    {(formData.order_type === "FOB" || formData.order_type==="Garmenting" || formData.order_type==="Fabric Processing" || formData.order_type==="Fabrics Purchase" || formData.order_type==="Trims Purchase" || formData.order_type==="Sampling")
+      ? filteredBuyerPOItems.map((li, index) => (
+          <option key={li.line_item_id ?? index} value={li.style_number}>
+            {li.style_number}
+          </option>
+        ))
+      : itemsList.map((i, index) => (
+          <option key={i.item_id ?? index} value={i.style_number}>
+            {i.style_number}
+          </option>
+        ))}
   </select>
   
-</td>
+  
+    
+  </td>
+
+
+                    <td className="px-2 py-1 border">
+                      <select name="item_name" value={item.item_name ?? ""} onChange={e => handleItemChange(idx, e)} className={inputClass}>
+                        <option value="">-Select Item-</option>
+                        
+                        {/* {filteredItemsForItemName.map((i, index) => (
+                            <option key={i.item_id ?? index} value={i.item_name}>
+                            {i.item_name}
+                            </option>
+                        ))} */}
+
+{formData.order_type === "Fabric Processing" && item.processing_details
+  ? item.processing_details.map((p, i) => (
+      <option key={i} value={p.process_name}>
+        {p.process_name}
+      </option>
+    ))
+  : formData.order_type === "Fabrics Purchase" && item.fabric_details
+  ? item.fabric_details.map((f, i) => (
+      <option key={i} value={f.fabric_name}>
+        {f.fabric_name}
+      </option>
+    ))
+  : formData.order_type==="Trims Purchase" && item.stores_or_grinderies_details
+  ? item.stores_or_grinderies_details.map((t,i) => (
+      <option key={i} value={t.stores_or_grinderis_name}>
+        {t.stores_or_grinderis_name}
+      </option>
+  ))
+  : filteredItemsForItemName.map((i, index) => (
+      <option key={i.item_id ?? index} value={i.item_name}>
+        {i.item_name}
+      </option>
+    ))}
+
+
+
+                      </select>
+                    </td>
+                    {(formData.order_type!=="Garmenting" && formData.order_type!=="Fabric Processing") && (
+                    <td className="px-2 py-1 border">
+                      <input type="text" name="style_number" value={item.style_number ?? ""} onChange={e => handleItemChange(idx, e)} className={inputClass} />
+                    </td> )}
+                    {(formData.order_type!=="Garmenting" && formData.order_type!=="Fabric Processing") && (
+                    <td className="px-2 py-1 border">
+                      <input type="text" name="sku_code" value={item.sku_code ?? ""} onChange={e => handleItemChange(idx, e)} className={inputClass} />
+                    </td> )}
+
+              
                   
                     <td className="px-2 py-1 border"> <select name="units_of_measure" value={item.units_of_measure ?? ""} onChange={e => handleItemChange(idx, e)} className={inputClass} > <option value="">-Select UOM-</option> {uomOptions.map((uom) => ( <option key={uom} value={uom}> {uom}</option>))} </select> </td>
                     <td className="px-2 py-1 border">
@@ -600,21 +973,7 @@ setFormData({
                       </select>
                     </td>
                     <td className="px-2 py-1 border">
-                      {/* <select
-                        name="gst_treatment"
-                        value={item.gst_treatment}
-                        onChange={(e) => handleItemChange(idx, e)}
-                        className={inputClass}
-                      >
-                        <option value="">-Select-</option>
-                        <option value={3}>3</option>
-                        <option value={5}>5</option>
-                        <option value={6}>6</option>
-                        <option value={9}>9</option>
-                        <option value={12}>12</option>
-                        <option value={18}>18</option>
-            
-                      </select> */}
+                      
                       <select
   name="gst_treatment"
   value={item.gst_treatment || 0}   // ✅ force UI to show 0 when Apply Taxes = "No"
@@ -635,6 +994,8 @@ setFormData({
                     <td className="px-2 py-1 border">
                       <input type="number" name="amount" value={item.amount ?? 0} readOnly className={inputClass} />
                     </td>
+                  
+
                   </tr>
                 ))}
               </tbody>

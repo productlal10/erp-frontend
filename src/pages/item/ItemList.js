@@ -61,7 +61,7 @@ const ItemList = ({ refreshList, onEdit, onDelete }) => {
   const snakeCaseLabel = (str) => str.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
   const fields = [
-    "item_name", "item_sku", "description", "is_composite", "item_type", "warehouse_name",
+    "item_id","item_name", "item_sku", "description", "is_composite", "item_type", "warehouse_name",
     "created_by", "bom_file", "is_fob", "category_name", "subcategory_name", "sub_sub_category",
     "material", "colour", "craft", "lal10_or_outside", "size", "selling_price", "cost_price",
     "inventory_quantity", "tax_preference", "hsn_sac", "style_number", "buyer_style_ref",
